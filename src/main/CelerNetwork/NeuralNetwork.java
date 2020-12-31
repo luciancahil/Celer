@@ -102,17 +102,19 @@ public class NeuralNetwork {
 
         this.numWeights = numNeuronsL1 * numNeuronsL2 + numNeuronsL2 * numNeuronsL3 + numNeuronsL3 * numNeuronsL4;
         weights = new double[numWeights];
+
+        generateWeights();
     }
 
     private void generateWeights(){
         Random rand = new Random(seed);
 
         for(int i = 0; i < numWeights; i++){
-            weights[i] = rand.nextDouble();
+            weights[i] = rand.nextDouble() * 20 - 10;
         }
 
         for(int i = 0; i < numBiases; i++){
-            biases[i] = rand.nextDouble();
+            biases[i] = rand.nextDouble() * 20 - 10;
         }
     }
 
@@ -130,8 +132,6 @@ public class NeuralNetwork {
     public double getNeuron(int index)      { return neurons[index];}
     public double getWeight(int index)      { return weights[index];}
     public double getBias(int index)        { return biases[index];}
-
-
 
     public static void main(String[] args){
 
