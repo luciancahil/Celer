@@ -1,6 +1,7 @@
 package main.CelerNetwork;
 
 import java.util.Random;
+import java.util.HashSet;
 
 public class NeuralNetwork {
     // the seed used to generate the initial values in the network
@@ -27,6 +28,15 @@ public class NeuralNetwork {
     // the number of weights
     private final int numWeights;
 
+    // the number of examples supplied to the network
+    private int numExamples;
+
+    // the number of examples we are using to train the network. About 90% of total examples
+    private int numTrainingExamples;
+
+    // the number of examples we are using to test the network. About 10% of total examples
+    private int numTestingExamples;
+
     // the double array where values of each neuron is stored
     private final double[] neurons;
 
@@ -49,7 +59,34 @@ public class NeuralNetwork {
     private final double[] biases;
 
 
+    /*
+     * the double array meant to store the input data that will be used to train the neural network
+     */
+    private double[][] trainingDataInput;
 
+    /*
+     * the double array meant to store the desired output data that will be used to train the neural network
+     */
+    private double[][] trainingDataOutput;
+
+    /*
+     * The set that stores the index
+     */
+    private HashSet<Integer> isInTesting;
+
+    /*
+     * The double array meant to store the input data that will be used to train the neural network
+     * When the training data is provided, 10% will be randomly selected to be used soley
+     * for testing purposes
+     */
+    private double[][] testingDataInput;
+
+    /*
+     * the double array meant to store the desired output data that will be used to train the neural network
+     * When the training data is provided, 10% will be randomly selected to be used soley
+     * for testing purposes
+     */
+    private double[][] testingDataOutput;
 
 
     /**
@@ -127,6 +164,58 @@ public class NeuralNetwork {
 
         for(int i = 0; i < numBiases; i++){
             biases[i] = rand.nextDouble() * 20 - 10;
+        }
+    }
+
+
+    /**
+     * Purpose: Supplies a large quanity of data to be used for training and testing purposes
+     *
+     * Parameter: input - the data we will use to feed into the input layer of the neural network. input[i]'s desired output is output[i]
+     * Parameter: output - the array of desired outputs from the output layer. input[i]'s desired output is output[i]
+     */
+    public void setData(double[][] input, double[][] output){
+        // Random object used to select which examples are set to training.
+        Random rand = new Random(seed);
+
+        // setting the global variables
+        numExamples = input.length;
+        numTestingExamples = numExamples / 10;
+        numTrainingExamples = numExamples - numTestingExamples;
+
+
+        // initializing the arrays that will hold the data
+        trainingDataInput = new double[numTrainingExamples][numNeuronsL1];
+        trainingDataOutput = new double[numTrainingExamples][numNeuronsL4];
+        testingDataInput = new double[numTrainingExamples][numNeuronsL1];
+        testingDataOutput = new double[numTrainingExamples][numNeuronsL4];
+
+        // randomly assign values to the testing array
+
+        for(int i = 0; i < numTestingExamples; i++){
+            int chosen = rand.nextInt() % numExamples;      // the index of an array chosen to be in the training set
+
+            // we keep generating until we come up with an index not already in the array.
+            while(!isInTesting.add(chosen)){
+                chosen = rand.nextInt() % numExamples;
+            }
+
+            testingDataInput[chosen] = input[chosen];
+            testingDataInput[chosen] = output[chosen];
+        }
+
+
+        // assign all values not placed into the testing array into the training array;
+
+        for(int i = 0; i < numExamples; i++){
+            if(isInTesting.contains((i))){
+                // the value is in the testing array
+                i++;
+            }else{
+                // the value is not in the testing array, so we can put it in the
+                trainingDataInput[i] = input[i];
+                trainingDataOutput[i] = output[i];
+            }
         }
     }
 
