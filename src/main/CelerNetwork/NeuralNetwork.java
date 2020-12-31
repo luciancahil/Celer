@@ -116,6 +116,23 @@ public class NeuralNetwork {
         }
     }
 
+    /**
+     * Public "get" functions"
+     */
+    public long getSeed()                   { return seed;}
+    public int getNumNeuronsL1()            { return numNeuronsL1;}
+    public int getNumNeuronsL2()            { return numNeuronsL2;}
+    public int getNumNeuronsL3()            { return numNeuronsL3;}
+    public int getNumNeuronsL4()            { return numNeuronsL4;}
+    public int getNumNeurons()              { return numNeurons;}
+    public int getNumBiases()               { return numBiases;}
+    public int getNumWeights()              { return numWeights;}
+    public double getNeuron(int index)      { return neurons[index];}
+    public double getWeight(int index)      { return weights[index];}
+    public double getBias(int index)        { return biases[index];}
+
+
+
     public static void main(String[] args){
 
     }
