@@ -1,5 +1,7 @@
 package main.CelerNetwork;
 
+import java.util.Random;
+
 public class NeuralNetwork {
     // the seed used to generate the initial values in the network
     private final long seed;
@@ -41,7 +43,7 @@ public class NeuralNetwork {
 
 
 
-    /*
+    /**
      * Function: Construction of a brand new neural Network with a randomly generated seed
      * Parameter: inputSize - the number of neurons in the input layer
      * Parameter: outputSize - the number of neurons in the output layer.
@@ -50,7 +52,7 @@ public class NeuralNetwork {
         this(inputSize, outputSize, null);
     }
 
-    /*
+    /**
      * Function: Construction of a brand new neural Network with a previously set seed
      * Parameter: inputSize - the number of neurons in the input layer
      * Parameter: outputSize - the number of neurons in the output layer.
@@ -100,6 +102,18 @@ public class NeuralNetwork {
 
         this.numWeights = numNeuronsL1 * numNeuronsL2 + numNeuronsL2 * numNeuronsL3 + numNeuronsL3 * numNeuronsL4;
         weights = new double[numWeights];
+    }
+
+    private void generateWeights(){
+        Random rand = new Random(seed);
+
+        for(int i = 0; i < numWeights; i++){
+            weights[i] = rand.nextDouble();
+        }
+
+        for(int i = 0; i < numBiases; i++){
+            biases[i] = rand.nextDouble();
+        }
     }
 
     public static void main(String[] args){
