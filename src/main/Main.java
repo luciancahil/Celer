@@ -4,6 +4,6 @@ import main.CelerNetwork.NeuralNetwork;
 
 public class Main {
     public static void main(String[] args) {
-        NeuralNetwork network = new NeuralNetwork();
+        NeuralNetwork network = new NeuralNetwork(1, 2);
     }
 }
