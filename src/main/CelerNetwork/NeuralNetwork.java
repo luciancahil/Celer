@@ -30,16 +30,25 @@ public class NeuralNetwork {
     // the double array where values of each neuron is stored
     private final double[] neurons;
 
-    // the double array where values of each weight and bias is stored
-    // the first numNeuronsL2 connect from the first neuron in the first layer to neurons in the second layer
-    // the next connect to
+    /*
+     * The double array where values of each weight and bias is stored
+     * The first numNeuronsL2 * numNeuronsL1 are the neurons between layer 1 and layer 2
+     * The next The first numNeuronsL2 * numNeuronsL3 connect layer 2 to layer 3
+     * The last The first numNeuronsL3 * numNeuronsL4 connect layer 3 to layer 4
+     * The first numNeuronsL2 connect from the first neuron in the first layer
+     * to neurons in the second layer, and we always store every connection for the left
+     * neuron before moving to the next.
+     */
     private final double[] weights;
 
-
-    // the double array where the value of each bias is stored
-    // the index of each bias corresponds to the index of the neuron in the neurons array - numNeuronsL1.
-    // since neurons in the first layer do not have biases
+    /*
+     * the double array where the value of each bias is stored
+     * the index of each bias corresponds to the index of the neuron in the neurons array - numNeuronsL1.
+     * since neurons in the first layer do not have biase
+     */
     private final double[] biases;
+
+
 
 
 
@@ -106,6 +115,9 @@ public class NeuralNetwork {
         generateWeights();
     }
 
+    /**
+     * Purpose: Generates a random value between -10 and 10 for every weight and bias.
+     */
     private void generateWeights(){
         Random rand = new Random(seed);
 
