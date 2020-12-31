@@ -1,9 +1,9 @@
 package main;
-import main.CelerNetwork.Celer;
+import main.CelerNetwork.NeuralNetwork;
 
 
 public class Main {
     public static void main(String[] args) {
-        Celer network = new Celer();
+        NeuralNetwork network = new NeuralNetwork();
     }
 }
