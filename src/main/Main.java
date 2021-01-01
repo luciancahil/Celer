@@ -3,8 +3,6 @@ import main.CelerNetwork.NeuralNetwork;
 
 
 import java.io.*;
-//TODO add documentation to setData
-
 
 public class Main {
     public static void main(String[] args) throws IOException {
@@ -13,13 +11,24 @@ public class Main {
 
         setData("data/mnist_digits.csv", inputArray, outputArray);
 
-        for(int i = 0; i < 256; i++){
-            System.out.println(inputArray[12][i] + " vs. " + inputArray[12][i]*256);
+        System.out.println("New:");
+        for(int i = 0; i < 12; i++){
+            System.out.println("New:");
+            for(int j = 0; j < 784; j++) {
+                System.out.print(inputArray[i][j] + ", ");
+            }
+
         }
-        showImage(inputArray[1]);
+        showImage(inputArray[2]);
     }
 
-
+    /**
+     *
+     * @param fileName - The path to the data file we use as data
+     * @param inputArray - The array we place all input values into
+     * @param outputArray - The array we place all output values into
+     * @throws IOException: When the filepath does not lead to a valid path
+     */
     private static void setData(String fileName, double[][] inputArray, double[][] outputArray) throws IOException {
         // file reader that will read the data file
         FileReader data = new FileReader(fileName);
@@ -43,7 +52,7 @@ public class Main {
         int dataPoint;
 
         // run through each line in the file
-        for(int j = 0; j < 60000; j++){
+        for(int i = 0; i < 60000; i++){
 
             // start looking for commas at the begining of the file
             oldCommaIndex = -1;
@@ -55,7 +64,7 @@ public class Main {
              * The next 784 numbers represent the brightness of a given pixel
              * in a 28 x 28 display. 255 is fully activated, 0 is not activated
              */
-            for(int i = 0; i < 784; i++){
+            for(int j = 0; j < 784; j++){
 
                 // locate the next comma
                 commaIndex = nextLine.indexOf(",", oldCommaIndex + 1);
@@ -72,14 +81,15 @@ public class Main {
                 // get an actual int data type from the number string
                 dataPoint = Integer.parseInt(numberString);
 
-                if(i == 0){
+                if(j == 0){
                     // this represents the label
-                    outputArray[j][dataPoint] = 1;
+                    outputArray[i][dataPoint] = 1;
                 }else{
-                    inputArray[j][i] = dataPoint/256.0;
+                    inputArray[i][j] = dataPoint/256.0;
                 }
                 oldCommaIndex = commaIndex;
             }
+            nextLine = bufferedRead.readLine();
         }
 
 

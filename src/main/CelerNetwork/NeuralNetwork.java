@@ -54,7 +54,7 @@ public class NeuralNetwork {
     /*
      * the double array where the value of each bias is stored
      * the index of each bias corresponds to the index of the neuron in the neurons array - numNeuronsL1.
-     * since neurons in the first layer do not have biase
+     * since neurons in the first layer do not have bias
      */
     private final double[] biases;
 
@@ -76,14 +76,14 @@ public class NeuralNetwork {
 
     /*
      * The double array meant to store the input data that will be used to train the neural network
-     * When the training data is provided, 10% will be randomly selected to be used soley
+     * When the training data is provided, 10% will be randomly selected to be used solely
      * for testing purposes
      */
     private double[][] testingDataInput;
 
     /*
      * the double array meant to store the desired output data that will be used to train the neural network
-     * When the training data is provided, 10% will be randomly selected to be used soley
+     * When the training data is provided, 10% will be randomly selected to be used solely
      * for testing purposes
      */
     private double[][] testingDataOutput;
@@ -169,7 +169,7 @@ public class NeuralNetwork {
 
 
     /**
-     * Purpose: Supplies a large quanity of data to be used for training and testing purposes
+     * Purpose: Supplies a large quantity of data to be used for training and testing purposes
      *
      * Parameter: input - the data we will use to feed into the input layer of the neural network. input[i]'s desired output is output[i]
      * Parameter: output - the array of desired outputs from the output layer. input[i]'s desired output is output[i]
