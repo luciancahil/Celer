@@ -15,7 +15,7 @@ public class Main {
             System.out.println(inputArray[12][i]);
         }
 
-        NeuralNetwork network = new NeuralNetwork(784, 10);
+        NeuralNetwork network = new NeuralNetwork(10, 40);
     }
 
     /**

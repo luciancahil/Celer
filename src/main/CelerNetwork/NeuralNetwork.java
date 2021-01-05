@@ -4,6 +4,7 @@ import java.util.Objects;
 import java.util.Random;
 import java.util.HashSet;
 
+//TODO implement testing of constructors and the getNeuron function
 //TODO implement a "run" of the neural network based on data
 //TODO implement a cost function
 //TODO change number of neurons into an array for each layer
@@ -169,8 +170,7 @@ public class NeuralNetwork {
         numNeuronsLayer = new int[4];
         numNeuronsLayer[0] = inputSize;
         numNeuronsLayer[3] = outputSize;
-        //this.numNeuronsL1 = inputSize;
-        //this.numNeuronsL4 = numNeuronsLayer;
+
 
         /* The difference in size between numNeuronsL1 and numNeuronsL2,
          *  numNeuronsL2 and numNeuronsL3, and between numNeuronsL3 and
@@ -278,7 +278,7 @@ public class NeuralNetwork {
      * @return the index of the placeth neuron in the layerth layer in the neurons array
      * @throws IllegalArgumentException if an invalid neuron is supplied
      */
-    private int getNeruonIndex(int layer, int place) throws IllegalArgumentException{
+    private int getNeuronIndex(int layer, int place) throws IllegalArgumentException{
         if(layer > 4 || layer < 1){
             throw new IllegalArgumentException("The layer number must be between 1 and 4.");
         }else if(place > numNeuronsLayer[layer - 1]){
@@ -289,8 +289,8 @@ public class NeuralNetwork {
 
 
         // add up the number of neurons before the given layer
-        for(int i = 0; i < layer; i++){
-            index += numNeuronsLayer[i];
+        for(int i = 1; i < layer; i++){
+            index += numNeuronsLayer[i - 1];
         }
 
         // add the number of neurons on the given layer before the inputted neuron
