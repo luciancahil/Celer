@@ -62,17 +62,9 @@ public class NeuralNetwork {
     // the seed used to generate the initial values in the network
     private final long seed;
 
-    // the number of neurons in the inputLayer
-    private final int numNeuronsL1;
-
-    // the number of neurons in the first hidden layer
-    private final int numNeuronsL2;
-
-    // the number of neurons in the second hidden layer
-    private final int numNeuronsL3;
-
-    // the number of neurons in the output layer
-    private final int numNeuronsL4;
+    // the array that stores the number of neurons in each layer. numNeuronsLayer[0] stores the
+    // number of neurons in the first layer
+    private final int[] numNeuronsLayer;
 
     // the total number of neurons in the entire network
     private final int numNeurons;
@@ -174,8 +166,11 @@ public class NeuralNetwork {
 
 
         /* Setting the number of neurons in each layer */
-        this.numNeuronsL1 = inputSize;
-        this.numNeuronsL4 = outputSize;
+        numNeuronsLayer = new int[4];
+        numNeuronsLayer[0] = inputSize;
+        numNeuronsLayer[3] = outputSize;
+        //this.numNeuronsL1 = inputSize;
+        //this.numNeuronsL4 = numNeuronsLayer;
 
         /* The difference in size between numNeuronsL1 and numNeuronsL2,
          *  numNeuronsL2 and numNeuronsL3, and between numNeuronsL3 and
@@ -186,22 +181,22 @@ public class NeuralNetwork {
 
         if(inputSize < outputSize){
             /* there are more neurons in the output layer than input layer*/
-            this.numNeuronsL2 = inputSize + sizeDiff/3;
-            this.numNeuronsL3 = outputSize - sizeDiff/3;
+            numNeuronsLayer[1] = inputSize + sizeDiff/3;
+            numNeuronsLayer[2] = outputSize - sizeDiff/3;
         }else{
             /* there are more neurons in the input layer than output layer*/
-            this.numNeuronsL2 = inputSize - sizeDiff/3;
-            this.numNeuronsL3 = outputSize + sizeDiff/3;
+            numNeuronsLayer[1] = inputSize - sizeDiff/3;
+            numNeuronsLayer[2] = outputSize + sizeDiff/3;
         }
 
-        this.numNeurons = numNeuronsL1 + numNeuronsL2 + numNeuronsL3 + numNeuronsL4;
+        this.numNeurons = numNeuronsLayer[0] + numNeuronsLayer[1] + numNeuronsLayer[2] + numNeuronsLayer[3];
         this.neurons = new double[numNeurons];
 
         /* there is a bias for every neuron not in the first layer */
-        this.numBiases = numNeurons - numNeuronsL1;
+        this.numBiases = numNeurons - numNeuronsLayer[0];
         biases = new double[numBiases];
 
-        this.numWeights = numNeuronsL1 * numNeuronsL2 + numNeuronsL2 * numNeuronsL3 + numNeuronsL3 * numNeuronsL4;
+        this.numWeights = numNeuronsLayer[0]  * numNeuronsLayer[1]  + numNeuronsLayer[1]  * numNeuronsLayer[2]  + numNeuronsLayer[2]  * numNeuronsLayer[3];
         weights = new double[numWeights];
 
         generateWeights();
@@ -240,10 +235,10 @@ public class NeuralNetwork {
 
 
         // initializing the arrays that will hold the data
-        trainingDataInput = new double[numTrainingExamples][numNeuronsL1];
-        trainingDataOutput = new double[numTrainingExamples][numNeuronsL4];
-        testingDataInput = new double[numTrainingExamples][numNeuronsL1];
-        testingDataOutput = new double[numTrainingExamples][numNeuronsL4];
+        trainingDataInput = new double[numTrainingExamples][numNeuronsLayer[0]];
+        trainingDataOutput = new double[numTrainingExamples][numNeuronsLayer[3]];
+        testingDataInput = new double[numTrainingExamples][numNeuronsLayer[0]];
+        testingDataOutput = new double[numTrainingExamples][numNeuronsLayer[3]];
 
         // randomly assign values to the testing array
 
@@ -278,10 +273,10 @@ public class NeuralNetwork {
      * Public "get" functions"
      */
     public long getSeed()                   { return seed;}
-    public int getNumNeuronsL1()            { return numNeuronsL1;}
-    public int getNumNeuronsL2()            { return numNeuronsL2;}
-    public int getNumNeuronsL3()            { return numNeuronsL3;}
-    public int getNumNeuronsL4()            { return numNeuronsL4;}
+    public int getNumNeuronsL1()            { return numNeuronsLayer[0];}
+    public int getNumNeuronsL2()            { return numNeuronsLayer[1];}
+    public int getNumNeuronsL3()            { return numNeuronsLayer[2];}
+    public int getNumNeuronsL4()            { return numNeuronsLayer[3];}
     public int getNumNeurons()              { return numNeurons;}
     public int getNumBiases()               { return numBiases;}
     public int getNumWeights()              { return numWeights;}
