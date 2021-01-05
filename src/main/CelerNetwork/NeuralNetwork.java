@@ -4,7 +4,6 @@ import java.util.Objects;
 import java.util.Random;
 import java.util.HashSet;
 
-//TODO implement testing of constructors and the getNeuron function
 //TODO implement a "run" of the neural network based on data
 //TODO implement a cost function
 //TODO change number of neurons into an array for each layer
@@ -271,7 +270,7 @@ public class NeuralNetwork {
     }
 
     /**
-     * Returns the index of the placeth neuron in the layerth layer in the neurons array
+     * Returns the index of a neuron in the neurons array from the neuron's layer and place in layer
      *
      * @param layer the layer the desired neuron is one
      * @param place the place the neuron is in within the given layer
@@ -290,6 +289,37 @@ public class NeuralNetwork {
 
         // add up the number of neurons before the given layer
         for(int i = 1; i < layer; i++){
+            index += numNeuronsLayer[i - 1];
+        }
+
+        // add the number of neurons on the given layer before the inputted neuron
+        index += place - 1;
+
+        return index;
+    }
+
+    /**
+     * Returns the index of the bias of a neuron in the bias array from the neuron's layer and place in layer
+     *
+     * @param layer the layer the desired neuron is one
+     * @param place the place the neuron is in within the given layer
+     * @return the index of the bias placeth neuron in the layerth layer in the neurons array
+     * @throws IllegalArgumentException if an invalid or input neuron is supplied,
+     */
+    private int getBiasIndex(int layer, int place) throws IllegalArgumentException{
+        if(layer > 4 || layer < 1){
+            throw new IllegalArgumentException("The layer number must be between 2 and 4.");
+        }else if(layer == 1){
+            throw new IllegalArgumentException("The first layer does not have any biases.");
+        }else if(place > numNeuronsLayer[layer - 1]){
+            throw new IllegalArgumentException("The are not " + place + " neurons in layer " + layer + ".");
+        }
+
+        int index = 0;      // the index of the given neuron in the neurons array
+
+
+        // add up the number of neurons before the given layer
+        for(int i = 2; i < layer; i++){
             index += numNeuronsLayer[i - 1];
         }
 
