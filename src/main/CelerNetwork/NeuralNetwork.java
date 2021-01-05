@@ -1,5 +1,6 @@
 package main.CelerNetwork;
 
+import java.util.Objects;
 import java.util.Random;
 import java.util.HashSet;
 
@@ -84,7 +85,17 @@ public class NeuralNetwork {
     // the number of examples we are using to test the network. About 10% of total examples
     private int numTestingExamples;
 
-    // the double array where values of each neuron's weighted sum is stored
+    /*
+     * The array that stores information about the activation of a given neuron
+     * All the neurons in the input layer are stored first, then the first hidden
+     * layer, then the second hidden layer, then the output layer.
+     *
+     * In the input and activation layer, the actual activation is stored.
+     *
+     * In the hidden layers, the weighted sum is stored, as we need to easily access
+     * that value during the gradient descent process.
+     *
+     */
     private final double[] neurons;
 
     /*
@@ -115,11 +126,6 @@ public class NeuralNetwork {
      * the double array meant to store the desired output data that will be used to train the neural network
      */
     private double[][] trainingDataOutput;
-
-    /*
-     * The set that stores the index
-     */
-    private HashSet<Integer> isInTesting;
 
     /*
      * The double array meant to store the input data that will be used to train the neural network
@@ -156,13 +162,7 @@ public class NeuralNetwork {
         int sizeDiff = Math.abs(inputSize - outputSize);
 
         /* sett the seed value */
-        if(seed == null){
-            // no seed was passed
-            this.seed = (long)(Math.random() * Long.MAX_VALUE);
-        }else {
-            // a seed was passed
-            this.seed = seed;
-        }
+        this.seed = Objects.requireNonNullElseGet(seed, () -> (long) (Math.random() * Long.MAX_VALUE));
 
 
         /* Setting the number of neurons in each layer */
@@ -227,6 +227,7 @@ public class NeuralNetwork {
     public void setData(double[][] input, double[][] output){
         // Random object used to select which examples are set to training.
         Random rand = new Random(seed);
+        HashSet<Integer> isInTesting = new HashSet<Integer>();
 
         // setting the global variables
         numExamples = input.length;
