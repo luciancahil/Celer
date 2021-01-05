@@ -9,7 +9,7 @@ public class Main {
         double[][] inputArray = new double[60000][784];
         double[][]  outputArray = new double[60000][10];
 
-        setData("data/mnist_digits.csv", inputArray, outputArray);
+        //setData("data/mnist_digits.csv", inputArray, outputArray);
 
         NeuralNetwork network = new NeuralNetwork(10, 40);
     }

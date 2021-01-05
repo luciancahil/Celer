@@ -200,6 +200,11 @@ public class NeuralNetwork {
         weights = new double[numWeights];
 
         generateWeights();
+
+
+        System.out.println(getNumWeights());
+
+        System.out.println(getWeightIndex(1, 10, 2, 23));
     }
 
     /**
@@ -309,7 +314,7 @@ public class NeuralNetwork {
      */
     private int getBiasIndex(int layer, int place) throws IllegalArgumentException{
         if(layer > 4 || layer < 1){
-            throw new IllegalArgumentException("The layer number must be between 2 and 4.");
+            throw new IllegalArgumentException("The layer number must be between 1 and 4.");
         }else if(layer == 1){
             throw new IllegalArgumentException("The first layer does not have any biases.");
         }else if(place > numNeuronsLayer[layer - 1] || place < 1){
@@ -326,6 +331,37 @@ public class NeuralNetwork {
 
         // add the number of neurons on the given layer before the inputted neuron
         index += place - 1;
+
+        return index;
+    }
+
+    private int getWeightIndex(int neuronOneLayer, int neuronOnePlace, int neuronTwoLayer, int neuronTwoPlace){
+        if(neuronOneLayer > 4 || neuronOneLayer < 1 || neuronTwoLayer > 4 || neuronTwoLayer < 1){
+            throw new IllegalArgumentException("The layer number must be between 1 and 4.");
+        }else if((neuronTwoLayer - neuronOneLayer) != 1){
+            throw new IllegalArgumentException("The second neuron must be in the layer directly after the first neuron.");
+        }else if(neuronOnePlace > numNeuronsLayer[neuronOneLayer - 1] || neuronOnePlace < 1){
+            throw new IllegalArgumentException("The is no neuron number " + neuronOnePlace + " in layer " + neuronOneLayer + ".");
+        }else if(neuronTwoPlace > numNeuronsLayer[neuronTwoLayer - 1] || neuronTwoPlace < 1){
+            throw new IllegalArgumentException("The is no neuron number " + neuronTwoPlace + " in layer " + neuronTwoLayer + ".");
+        }
+
+        int index = 0;// the index of the given weight in the weights array
+
+
+        // count past all the weights that start in a layer before the layer of the first neuron
+        for(int i = 1; i < neuronOneLayer; i++){
+            index += numNeuronsLayer[i - 1] * numNeuronsLayer[i];
+        }
+
+        // count past all the weights that start at a neuron before neuronOne but on the same layer
+        index += numNeuronsLayer[neuronTwoLayer - 1] * (neuronOnePlace - 1);
+
+        // we now have reached the weights who begin at the starting neuron.
+
+        // add the number of weights that end on neuronTwoLayer before neuronTwo
+
+        index += neuronTwoPlace - 1;
 
         return index;
     }
