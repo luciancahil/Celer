@@ -158,6 +158,7 @@ public class NeuralNetwork {
      * Parameter: seed - the seed used to generate the initial values
      */
     public NeuralNetwork(int inputSize, int outputSize, Long seed){
+
         /* the difference between the number of neurons in the input and output layer */
         int sizeDiff = Math.abs(inputSize - outputSize);
 
@@ -280,8 +281,8 @@ public class NeuralNetwork {
     private int getNeuronIndex(int layer, int place) throws IllegalArgumentException{
         if(layer > 4 || layer < 1){
             throw new IllegalArgumentException("The layer number must be between 1 and 4.");
-        }else if(place > numNeuronsLayer[layer - 1]){
-            throw new IllegalArgumentException("The are not " + place + " neurons in layer " + layer + ".");
+        }else if(place > numNeuronsLayer[layer - 1] || place < 1){
+            throw new IllegalArgumentException("The is no neuron number " + place + " in layer " + layer + ".");
         }
 
         int index = 0;      // the index of the given neuron in the neurons array
@@ -311,8 +312,8 @@ public class NeuralNetwork {
             throw new IllegalArgumentException("The layer number must be between 2 and 4.");
         }else if(layer == 1){
             throw new IllegalArgumentException("The first layer does not have any biases.");
-        }else if(place > numNeuronsLayer[layer - 1]){
-            throw new IllegalArgumentException("The are not " + place + " neurons in layer " + layer + ".");
+        }else if(place > numNeuronsLayer[layer - 1] || place < 1){
+            throw new IllegalArgumentException("The is no neuron number " + place + " in layer " + layer + ".");
         }
 
         int index = 0;      // the index of the given neuron in the neurons array

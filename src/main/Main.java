@@ -11,10 +11,6 @@ public class Main {
 
         setData("data/mnist_digits.csv", inputArray, outputArray);
 
-        for(int i = 0; i < 784; i++){
-            System.out.println(inputArray[12][i]);
-        }
-
         NeuralNetwork network = new NeuralNetwork(10, 40);
     }
 
