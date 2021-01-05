@@ -271,6 +271,35 @@ public class NeuralNetwork {
     }
 
     /**
+     * Returns the index of the placeth neuron in the layerth layer in the neurons array
+     *
+     * @param layer the layer the desired neuron is one
+     * @param place the place the neuron is in within the given layer
+     * @return the index of the placeth neuron in the layerth layer in the neurons array
+     * @throws IllegalArgumentException if an invalid neuron is supplied
+     */
+    private int getNeruonIndex(int layer, int place) throws IllegalArgumentException{
+        if(layer > 4 || layer < 1){
+            throw new IllegalArgumentException("The layer number must be between 1 and 4.");
+        }else if(place > numNeuronsLayer[layer - 1]){
+            throw new IllegalArgumentException("The are not " + place + " neurons in layer " + layer + ".");
+        }
+
+        int index = 0;      // the index of the given neuron in the neurons array
+
+
+        // add up the number of neurons before the given layer
+        for(int i = 0; i < layer; i++){
+            index += numNeuronsLayer[i];
+        }
+
+        // add the number of neurons on the given layer before the inputted neuron
+        index += place - 1;
+
+        return index;
+    }
+
+    /**
      * Public "get" functions"
      */
     public long getSeed()                   { return seed;}
