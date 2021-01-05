@@ -3,6 +3,61 @@ package main.CelerNetwork;
 import java.util.Random;
 import java.util.HashSet;
 
+//TODO implement a "run" of the neural network based on data
+//TODO implement a cost function
+//TODO change number of neurons into an array for each layer
+
+/**
+ * The Notation used in this documentation obeys the following conventions:
+ * Neuron: N(a, b) - Refers to the bth neuron in the ath layer
+ * Bias: B(a, b) -  Refers to the bias of the  bth neuron in the ath layer
+ * Weight: W(a, b, c) - Refers to the weight that connects the bth neuron
+ *  in the (a - 1)th layer to the cth neuron in the ath layer.
+ * Weighted Sum: Z(a, b): Refers to the weighted sum of the bth neuron in the
+ *  ath layer
+ *
+ * Examples:
+ * Neuron: N(2, 3) - Refers to the third neuron in the second layer.
+ * Bias: B(2, 3) -  Refers to the bias of the third neuron in the second layer
+ * Weight: W(3, 1, 2) - Refers to the weight that connects the first neuron
+ *  in the second layer to the second neuron in the third layer.
+ * Weighted Sum: Z(2, 3): Refers to the weighted sum of the third neuron in the second layer
+ *
+ * Implementation of a Convolution Neural Network. This neural network uses
+ * gradient descent and a minimizing cost function in order to achieve basic
+ * machine learning tasks, such as being able to recognize the
+ *
+ *
+ * By default, it will always have 4 layers: an input layer, and output layer,
+ * and 2 hidden layers. The input layer feeds into the first hidden
+ * layer, which feeds into the second hidden layer, which feeds
+ * into the output layer. Thee difference in the number of neurons in
+ * first hidden layer and the input layer should by default be 1/3
+ * the difference between the number of neurons in the input and output
+ * layer, as should the difference in neurons between the fist hidden
+ * layer and the second hidden layer, and the second hidden layer and
+ * the output layer. Meanwhile, the number of neurons in the input and output
+ * layers are supplied by the user.
+ *
+ * The value of each neuron is called an "activation". It can be any real
+ * number for the hidden layers, but must be between 0 and 1 inclusive for the
+ * input and output layers.
+ *
+ * The activation of the input layer is supplied by the user, while the activation
+ * of each layer is calculated based on the activation of every neuron in the
+ * previous layer.
+ *
+ * Every neuron in a given layer except the first is connected to each neuron in the previous
+ * layer by a weight. The activation of each neuron is multiplied by the corresponding weight,
+ * and then a bias is added to each neuron in order to create a weighted sum. That weighted
+ * sum is then run through a RELU function for each hidden layer, or through the Sigmoid
+ * function for the output layer in order to get the activation of the given neuron.
+ *
+ * That is, the activation of a given neuron not on the input layer is equal to either the
+ * RELU or the sigmoid of the sum of every activation value in previous layer multiplied
+ * by a given weight connecting the two neurons plus a given bias.
+ */
+
 public class NeuralNetwork {
     // the seed used to generate the initial values in the network
     private final long seed;
@@ -37,11 +92,11 @@ public class NeuralNetwork {
     // the number of examples we are using to test the network. About 10% of total examples
     private int numTestingExamples;
 
-    // the double array where values of each neuron is stored
+    // the double array where values of each neuron's weighted sum is stored
     private final double[] neurons;
 
     /*
-     * The double array where values of each weight and bias is stored
+     * The double array where values of each weight is stored
      * The first numNeuronsL2 * numNeuronsL1 are the neurons between layer 1 and layer 2
      * The next The first numNeuronsL2 * numNeuronsL3 connect layer 2 to layer 3
      * The last The first numNeuronsL3 * numNeuronsL4 connect layer 3 to layer 4

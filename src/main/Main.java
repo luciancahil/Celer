@@ -11,15 +11,11 @@ public class Main {
 
         setData("data/mnist_digits.csv", inputArray, outputArray);
 
-        System.out.println("New:");
-        for(int i = 0; i < 12; i++){
-            System.out.println("New:");
-            for(int j = 0; j < 784; j++) {
-                System.out.print(inputArray[i][j] + ", ");
-            }
-
+        for(int i = 0; i < 784; i++){
+            System.out.println(inputArray[12][i]);
         }
-        showImage(inputArray[2]);
+
+        NeuralNetwork network = new NeuralNetwork(784, 10);
     }
 
     /**
@@ -54,12 +50,12 @@ public class Main {
         // run through each line in the file
         for(int i = 0; i < 60000; i++){
 
-            // start looking for commas at the begining of the file
+            // start looking for commas at the beginning of the file
             oldCommaIndex = -1;
 
             /**
              * Run through each number in the line.
-             * Each number is seperated by a comma.
+             * Each number is separated by a comma.
              * The first number represents what number was hand drawn.
              * The next 784 numbers represent the brightness of a given pixel
              * in a 28 x 28 display. 255 is fully activated, 0 is not activated
@@ -85,6 +81,9 @@ public class Main {
                     // this represents the label
                     outputArray[i][dataPoint] = 1;
                 }else{
+                    // this number represents an activation
+                    // we divide by 256 in order to get a number between 0 and 1,
+                    // to make calibration of the neural network easier
                     inputArray[i][j] = dataPoint/256.0;
                 }
                 oldCommaIndex = commaIndex;
@@ -95,6 +94,10 @@ public class Main {
 
     }
 
+    /**
+     *
+     * @param image
+     */
     private static void showImage(double[] image){
         for(int i = 0; i < 28; i++){
             for(int j = 0; j < 28; j++){
