@@ -16,10 +16,27 @@ public class Main {
 
         NeuralNetwork network = new NeuralNetwork(5, 2, 769706441478710272L);
         network.runExample(input);
+        System.out.print("Layer One: ");
         network.printWeightedSums(1);
+        System.out.println();
 
+
+
+        for(int i = 1; i <= network.getlayerSize(2); i++) {
+            System.out.println();
+            System.out.print("Weights to " + i + ":");
+            network.printWeightsTo(2, i);
+        }
+        System.out.println();
+        System.out.print("Layer Two: ");
+        network.printWeightedSums(2);
+        System.out.println();
+        System.out.print("Biases: ");
+        network.printBiases(2);
 
     }
+
+
 
     /**
      *

@@ -388,21 +388,21 @@ public class NeuralNetwork {
         Sets the value of the weightedSums array for every layer past the first.
         We are not storing the actual activation; only the weighted sum.
          */
-        for(int layer = 2; layer <= numNeuronsLayer.length; layer++){    // for every layer from the second to the last
-            for(int receivingNeuron = 1; receivingNeuron <= numNeuronsLayer[layer - 1]; receivingNeuron++){ // for every neuron in the current layer
-                double weightedSum = biases[getBiasIndex(layer, receivingNeuron)]; // the weighted sum we are calculating.
+        for(int receivingLayer = 2; receivingLayer <= numNeuronsLayer.length; receivingLayer++){    // for every layer from the second to the last
+            for(int receivingNeuron = 1; receivingNeuron <= numNeuronsLayer[receivingLayer - 1]; receivingNeuron++){ // for every neuron in the current layer
+                double weightedSum = biases[getBiasIndex(receivingLayer, receivingNeuron)]; // the weighted sum we are calculating.
 
                 // for every neuron in the previous layer
-                for(int inputNeuron = 1; inputNeuron <= numNeuronsLayer[layer - 1]; inputNeuron++){
+                for(int inputNeuron = 1; inputNeuron <= numNeuronsLayer[(receivingLayer - 1) - 1]; inputNeuron++){
                     // add the activation of every neuron in the previous layer times the weight between said neuron and the recieving neuron
-                    weightedSum += NeuralMath.leakyRELU(neuronWeightedSums[getNeuronIndex((layer - 1), inputNeuron)]) * weights[getWeightIndex((layer - 1), inputNeuron, layer, receivingNeuron)];
+                    weightedSum += NeuralMath.leakyRELU(neuronWeightedSums[getNeuronIndex((receivingLayer - 1), inputNeuron)]) * weights[getWeightIndex((receivingLayer - 1), inputNeuron, receivingLayer, receivingNeuron)];
                 }
 
                 /* store the weighted sum in the neurons array
                  * we do NOT store tha actual activation in the array, as we need the weighted sum
                  * to calculate the gradient
                  */
-                neuronWeightedSums[getNeuronIndex(layer, receivingNeuron)] = weightedSum;
+                neuronWeightedSums[getNeuronIndex(receivingLayer, receivingNeuron)] = weightedSum;
             }
         }
 
@@ -450,7 +450,23 @@ public class NeuralNetwork {
         validateLayer(layer);
 
         for(int i = 1; i <= numNeuronsLayer[layer - 1]; i++){
-            System.out.println(neuronWeightedSums[getNeuronIndex(layer, i)] + " ");
+            System.out.print(neuronWeightedSums[getNeuronIndex(layer, i)] + " ");
+        }
+    }
+
+    /**
+     * Prints out the weighted sum of every neuron on a given layer
+     * @param layer: The layer whoes neurons we wish to print
+     */
+    public void printBiases(int layer){
+        validateLayer(layer);
+
+        if (layer == 1) {
+            throw new IllegalArgumentException("Neurons on layer 1 has no biases.");
+        }
+
+        for(int i = 1; i <= numNeuronsLayer[layer - 1]; i++){
+            System.out.print(biases[getBiasIndex(layer, i)] + " ");
         }
     }
 
