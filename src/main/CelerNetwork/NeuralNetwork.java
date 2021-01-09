@@ -92,13 +92,11 @@ public class NeuralNetwork {
      * All the neurons in the input layer are stored first, then the first hidden
      * layer, then the second hidden layer, then the output layer.
      *
-     * In the input and activation layer, the actual activation is stored.
-     *
-     * In the hidden layers, the weighted sum is stored, as we need to easily access
-     * that value during the gradient descent process.
-     *
+     * Since the weighted sum of a neuron is required to calculate the gradient,
+     * and the activation of a neuron is easy to calculate given the weighted sum,
+     * the activation is NEVER stored, and this array only stores the weighted sum.
      */
-    private final double[] neurons;
+    private final double[] neuronWeightedSums;
 
     /*
      * The double array where values of each weight is stored
@@ -192,7 +190,7 @@ public class NeuralNetwork {
         }
 
         this.numNeurons = numNeuronsLayer[0] + numNeuronsLayer[1] + numNeuronsLayer[2] + numNeuronsLayer[3];
-        this.neurons = new double[numNeurons];
+        this.neuronWeightedSums = new double[numNeurons];
 
         /* there is a bias for every neuron not in the first layer */
         this.numBiases = numNeurons - numNeuronsLayer[0];
@@ -386,7 +384,7 @@ public class NeuralNetwork {
             if(input[i] < 0){
                 throw new IllegalArgumentException("Negative values are not permitted as inputs");
             }
-            neurons[i] = input[i];
+            neuronWeightedSums[i] = input[i];
         }
 
 
@@ -400,14 +398,14 @@ public class NeuralNetwork {
                 // for every neuron in the previous layer
                 for(int inputNeuron = 0; inputNeuron < numNeuronsLayer[layer - 1]; inputNeuron++){
                     // add the activation of every neuron in the previous layer times the weight between said neuron and the recieving neuron
-                    weightedSum += NeuralMath.leakyRELU(neurons[getNeuronIndex((layer - 1), inputNeuron)]) * weights[getWeightIndex((layer - 1), inputNeuron, layer, receivingNeuron)];
+                    weightedSum += NeuralMath.leakyRELU(neuronWeightedSums[getNeuronIndex((layer - 1), inputNeuron)]) * weights[getWeightIndex((layer - 1), inputNeuron, layer, receivingNeuron)];
                 }
 
                 /* store the weighted sum in the neurons array
                    we do NOT store tha actual activation in the array, as we need the weighted sum
                    to calculate the gradient
                  */
-                neurons[getNeuronIndex(layer, receivingNeuron)] = weightedSum;
+                neuronWeightedSums[getNeuronIndex(layer, receivingNeuron)] = weightedSum;
             }
         }
 
@@ -426,7 +424,7 @@ public class NeuralNetwork {
     public int getNumNeurons()              { return numNeurons;}
     public int getNumBiases()               { return numBiases;}
     public int getNumWeights()              { return numWeights;}
-    public double getNeuron(int index)      { return neurons[index];}
+    public double getNeuron(int index)      { return neuronWeightedSums[index];}
     public double getWeight(int index)      { return weights[index];}
     public double getBias(int index)        { return biases[index];}
 
