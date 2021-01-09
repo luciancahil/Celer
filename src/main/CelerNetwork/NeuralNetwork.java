@@ -362,6 +362,19 @@ public class NeuralNetwork {
         return index;
     }
 
+    public double getCost(double[] input, double[] target){
+        double cost = 0;
+
+        runExample(input);
+
+        for(int i = 1; i <= numNeuronsLayer[NUM_LAYERS - 1]; i++){
+            double diff = target[i] - neuronWeightedSums[getNeuronIndex(NUM_LAYERS, i)];
+            cost += Math.pow(diff, 2);
+        }
+
+        return cost;
+    }
+
     /**
      *
      * @param input: The array that will supply information to the input layer.
