@@ -1,8 +1,10 @@
 package main;
 import main.CelerNetwork.NeuralNetwork;
+import main.CelerNetwork.NeuralMath.NeuralMath;
 
 
 import java.io.*;
+
 
 public class Main {
     public static void main(String[] args) throws IOException {
@@ -11,7 +13,11 @@ public class Main {
 
         //setData("data/mnist_digits.csv", inputArray, outputArray);
 
-        NeuralNetwork network = new NeuralNetwork(10, 40);
+        //NeuralNetwork network = new NeuralNetwork(10, 40);
+
+        for(int i = 1; i <= 20; i++){
+            System.out.println(-5.0 + i / 2.0 + ": "+ NeuralMath.sigmoid(-5.0 + i / 2.0));
+        }
     }
 
     /**
