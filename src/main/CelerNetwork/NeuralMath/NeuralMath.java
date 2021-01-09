@@ -24,8 +24,8 @@ public class NeuralMath {
      * Returns the sigmoid of a given input. The sigmoid function s(x) is equal to 1 / (1 + e^-x).
      * It will return a number between 0 and 1 for all real numbers, and the output wll be
      * closer to 0 for smaller inputs, and closer to 1 for larger inputs.
-     * @param input
-     * @return
+     * @param input the number we are calculating the sigmoid of
+     * @return The sigmoid function of input (always a number between 0 and 1)
      */
     public static double sigmoid(double input){
         return 1.0 / (1 + Math.pow(Math.E, input * - 1));
