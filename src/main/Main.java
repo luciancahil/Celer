@@ -16,7 +16,7 @@ public class Main {
 
         NeuralNetwork network = new NeuralNetwork(5, 2, 769706441478710272L);
         network.runExample(input);
-        System.out.println(network.getSeed());
+        network.printWeightedSums(1);
 
 
     }

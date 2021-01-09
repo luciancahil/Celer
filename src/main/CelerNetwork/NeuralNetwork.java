@@ -280,9 +280,9 @@ public class NeuralNetwork {
      * @throws IllegalArgumentException if an invalid neuron is supplied
      */
     private int getNeuronIndex(int layer, int place) throws IllegalArgumentException{
-        if(layer > 4 || layer < 1){
-            throw new IllegalArgumentException("The layer number must be between 1 and 4.");
-        }else if(place > numNeuronsLayer[layer - 1] || place < 1){
+        validateLayer(layer);
+
+        if(place > numNeuronsLayer[layer - 1] || place < 1){
             throw new IllegalArgumentException("The is no neuron number " + place + " in layer " + layer + ".");
         }
 
@@ -437,7 +437,7 @@ public class NeuralNetwork {
             throw new IllegalArgumentException("Neurons on layer 1 has no weights pointing to them.");
         }
 
-        for(int i = 0; i < numNeuronsLayer[layer]; i++){
+        for(int i = 1; i <= numNeuronsLayer[layer - 1]; i++){
             System.out.print(weights[getWeightIndex((layer - 1), i, layer, place)] + " ");
         }
     }
@@ -449,7 +449,7 @@ public class NeuralNetwork {
     public void printWeightedSums(int layer){
         validateLayer(layer);
 
-        for(int i = 0; i < numNeuronsLayer[layer]; i++){
+        for(int i = 1; i <= numNeuronsLayer[layer - 1]; i++){
             System.out.println(neuronWeightedSums[getNeuronIndex(layer, i)] + " ");
         }
     }
