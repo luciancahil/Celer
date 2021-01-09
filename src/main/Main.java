@@ -16,8 +16,8 @@ public class Main {
 
         NeuralNetwork network = new NeuralNetwork(5, 2, 769706441478710272L);
         network.runExample(input);
-        System.out.print("Layer One: ");
-        network.printWeightedSums(1);
+        System.out.print("Layer Two: ");
+        network.printWeightedSums(2);
         System.out.println();
 
 
@@ -28,8 +28,8 @@ public class Main {
             network.printWeightsTo(2, i);
         }
         System.out.println();
-        System.out.print("Layer Two: ");
-        network.printWeightedSums(2);
+        System.out.print("Layer Three: ");
+        network.printWeightedSums(3);
         System.out.println();
         System.out.print("Biases: ");
         network.printBiases(2);

@@ -437,7 +437,9 @@ public class NeuralNetwork {
             throw new IllegalArgumentException("Neurons on layer 1 has no weights pointing to them.");
         }
 
-        for(int i = 1; i <= numNeuronsLayer[layer - 1]; i++){
+
+        // prints the number of weights connecting to this layer for each neuron in the previous layer
+        for(int i = 1; i <= numNeuronsLayer[(layer - 1) - 1]; i++){
             System.out.print(weights[getWeightIndex((layer - 1), i, layer, place)] + " ");
         }
     }
