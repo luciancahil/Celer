@@ -362,6 +362,17 @@ public class NeuralNetwork {
         return index;
     }
 
+
+    /**
+     * Calculates how far our neural network is from performing optimally, based on a "cost" function.
+     *
+     * The cost function is calculated by taking the sum of square of the difference between each desired value of the output
+     *      array and it's actual value.
+     *
+     * @param input the array that we used as input to run the neural netwrok
+     * @param target the desired output we hope that the output layer looks like
+     * @return the value of the cost function
+     */
     public double getCost(double[] input, double[] target){
         double cost = 0;
 
@@ -376,7 +387,7 @@ public class NeuralNetwork {
     }
 
     /**
-     *
+     * Changes the value of each weighted sum based on a given index that serves as the input layer.
      * @param input: The array that will supply information to the input layer.
      * @throws IllegalArgumentException if the input array does not have the same number of entries as the input layer
      */

@@ -10,30 +10,12 @@ public class Main {
     public static void main(String[] args) throws IOException {
         //double[][] inputArray = new double[60000][784];
         //double[][]  outputArray = new double[60000][10];
-        double[] input = {1.3, 6.4, 7.8, 9.9, 2.3};
+        double[] input = {1.3, 6.4};
 
         //setData("data/mnist_digits.csv", inputArray, outputArray);
 
-        NeuralNetwork network = new NeuralNetwork(5, 2, 769706441478710272L);
-        network.runExample(input);
-        System.out.print("Layer Two: ");
-        network.printWeightedSums(2);
-        System.out.println();
-
-
-
-        for(int i = 1; i <= network.getlayerSize(2); i++) {
-            System.out.println();
-            System.out.print("Weights to " + i + ":");
-            network.printWeightsTo(2, i);
-        }
-        System.out.println();
-        System.out.print("Layer Three: ");
-        network.printWeightedSums(3);
-        System.out.println();
-        System.out.print("Biases: ");
-        network.printBiases(2);
-
+        NeuralNetwork network = new NeuralNetwork(2, 2, 769706441478710272L);
+        network.printWeightedSums();
     }
 
 
