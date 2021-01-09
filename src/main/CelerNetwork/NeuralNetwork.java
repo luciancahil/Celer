@@ -3,6 +3,7 @@ package main.CelerNetwork;
 import java.util.Objects;
 import java.util.Random;
 import java.util.HashSet;
+import main.CelerNetwork.NeuralMath.NeuralMath;
 
 //TODO implement a "run" of the neural network based on data
 //TODO implement a cost function
@@ -373,18 +374,42 @@ public class NeuralNetwork {
      * @throws IllegalArgumentException if the input array does not have the same number of entries as the input layer
      */
     private void runExample(double[] input) throws IllegalArgumentException{
+        // number of neurons in the input layer
         int inputSize = numNeuronsLayer[0];
+
         if(input.length != inputSize){
             throw new IllegalArgumentException("The input array should have " + inputSize + " entries.");
         }
 
         // Fills the input layer of the neural network with data from the input array
         for(int i = 0; i < inputSize; i++){
+            if(input[i] < 0){
+                throw new IllegalArgumentException("Negative values are not permitted as inputs");
+            }
             neurons[i] = input[i];
         }
 
 
-        // sets the hidden layers
+        /*
+        Sets the value of every hidden layer
+         */
+        for(int layer = 1; layer < numNeuronsLayer.length - 1; layer++){    // for every layer from the second to the second last
+            for(int receivingNeuron = 0; receivingNeuron < numNeuronsLayer[layer]; receivingNeuron++){ // for every neuron in the current layer
+                double weightedSum = biases[getBiasIndex(layer, receivingNeuron)]; // the weighted sum we are calculating.
+
+                // for every neuron in the previous layer
+                for(int inputNeuron = 0; inputNeuron < numNeuronsLayer[layer - 1]; inputNeuron++){
+                    // add the activation of every neuron in the previous layer times the weight between said neuron and the recieving neuron
+                    weightedSum += NeuralMath.leakyRELU(neurons[getNeuronIndex((layer - 1), inputNeuron)]) * weights[getWeightIndex((layer - 1), inputNeuron, layer, receivingNeuron)];
+                }
+
+                /* store the weighted sum in the neurons array
+                   we do NOT store tha actual activation in the array, as we need the weighted sum
+                   to calculate the gradient
+                 */
+                neurons[getNeuronIndex(layer, receivingNeuron)] = weightedSum;
+            }
+        }
 
 
         // sets the final layers
