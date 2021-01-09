@@ -10,14 +10,17 @@ public class Main {
     public static void main(String[] args) throws IOException {
         //double[][] inputArray = new double[60000][784];
         //double[][]  outputArray = new double[60000][10];
-        double[] input = {1.3, 6.4};
+        double[] input = {0.2, 0.5};
         double[] target = {0, 1};
 
         //setData("data/mnist_digits.csv", inputArray, outputArray);
 
-        NeuralNetwork network = new NeuralNetwork(2, 2, 769706441478710272L);
-        network.printWeightedSums(4);
+        NeuralNetwork network = new NeuralNetwork(2, 2);
+
         System.out.println(network.getCost(input, target));
+        network.printWeightedSums(4);
+        System.out.println();
+        network.printActivation(4);
     }
 
 

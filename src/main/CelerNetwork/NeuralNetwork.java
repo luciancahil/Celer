@@ -385,7 +385,9 @@ public class NeuralNetwork {
 
         // cycle through each neuron in the output layer, and check it against the target
         for(int i = 1; i <= numNeuronsLayer[NUM_LAYERS - 1]; i++){
-            double diff = target[i] - NeuralMath.sigmoid(neuronWeightedSums[getNeuronIndex(NUM_LAYERS, i)]);
+            // calculate the difference between actual and desired activation.
+            // runs the weighted sum through sigmoid to get activation value
+            double diff = target[i - 1] - NeuralMath.sigmoid(neuronWeightedSums[getNeuronIndex(NUM_LAYERS, i)]);
 
             // add the square of each difference to the cost value
             cost += Math.pow(diff, 2);
@@ -520,6 +522,20 @@ public class NeuralNetwork {
 
         for(int i = 1; i <= numNeuronsLayer[layer - 1]; i++){
             System.out.print(biases[getBiasIndex(layer, i)] + " ");
+        }
+    }
+
+    public void printActivation(int layer){
+        validateLayer(layer);
+
+        if(layer == NUM_LAYERS){
+            for(int i = 1; i <= numNeuronsLayer[layer - 1]; i++){
+                System.out.print(NeuralMath.sigmoid(neuronWeightedSums[getNeuronIndex(layer, i)]) + " ");
+            }
+        }else{
+            for(int i = 1; i <= numNeuronsLayer[layer - 1]; i++){
+                System.out.print(NeuralMath.leakyRELU(neuronWeightedSums[getNeuronIndex(layer, i)]) + " ");
+            }
         }
     }
 
