@@ -200,11 +200,6 @@ public class NeuralNetwork {
         weights = new double[numWeights];
 
         generateWeights();
-
-
-        System.out.println(getNumWeights());
-
-        System.out.println(getWeightIndex(1, 2, 2, 1));
     }
 
     /**
@@ -371,12 +366,12 @@ public class NeuralNetwork {
      * @param input: The array that will supply information to the input layer.
      * @throws IllegalArgumentException if the input array does not have the same number of entries as the input layer
      */
-    private void runExample(double[] input) throws IllegalArgumentException{
+    public void runExample(double[] input) throws IllegalArgumentException{
         // number of neurons in the input layer
         int inputSize = numNeuronsLayer[0];
 
         if(input.length != inputSize){
-            throw new IllegalArgumentException("The input array should have " + inputSize + " entries.");
+            throw new IllegalArgumentException("The input array should have " + inputSize + " entries instead of " + input.length + ".");
         }
 
         // Fills the input layer of the neural network with data from the input array
@@ -389,9 +384,10 @@ public class NeuralNetwork {
 
 
         /*
-        Sets the value of every hidden layer
+        Sets the value of the weightedSums array for every layer past the first.
+        We are not storing the actual activation; only the weighted sum.
          */
-        for(int layer = 1; layer < numNeuronsLayer.length - 1; layer++){    // for every layer from the second to the second last
+        for(int layer = 1; layer < numNeuronsLayer.length; layer++){    // for every layer from the second to the last
             for(int receivingNeuron = 0; receivingNeuron < numNeuronsLayer[layer]; receivingNeuron++){ // for every neuron in the current layer
                 double weightedSum = biases[getBiasIndex(layer, receivingNeuron)]; // the weighted sum we are calculating.
 
@@ -402,8 +398,8 @@ public class NeuralNetwork {
                 }
 
                 /* store the weighted sum in the neurons array
-                   we do NOT store tha actual activation in the array, as we need the weighted sum
-                   to calculate the gradient
+                 * we do NOT store tha actual activation in the array, as we need the weighted sum
+                 * to calculate the gradient
                  */
                 neuronWeightedSums[getNeuronIndex(layer, receivingNeuron)] = weightedSum;
             }

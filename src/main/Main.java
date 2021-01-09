@@ -8,16 +8,16 @@ import java.io.*;
 
 public class Main {
     public static void main(String[] args) throws IOException {
-        double[][] inputArray = new double[60000][784];
-        double[][]  outputArray = new double[60000][10];
+        //double[][] inputArray = new double[60000][784];
+        //double[][]  outputArray = new double[60000][10];
+        double[] input = {1.3, 6.4, 7.8, 9.9, 2.3};
+        double[] tooMany = new double[6];
+        double[] tooFew = new double[4];
 
         //setData("data/mnist_digits.csv", inputArray, outputArray);
 
-        //NeuralNetwork network = new NeuralNetwork(10, 40);
-
-        for(int i = 1; i <= 20; i++){
-            System.out.println(-5.0 + i / 2.0 + ": "+ NeuralMath.sigmoid(-5.0 + i / 2.0));
-        }
+        NeuralNetwork network = new NeuralNetwork(5, 2);
+        network.runExample(tooMany);
     }
 
     /**
