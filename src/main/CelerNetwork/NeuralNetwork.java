@@ -410,6 +410,50 @@ public class NeuralNetwork {
         // sets the final layers
     }
 
+
+    /**
+     * Checks if a given layer exists in the given network
+     * @param layer: the layer we are checking the validity of
+     */
+    private void validateLayer(int layer){
+        if(layer <= 0 || layer > NUM_LAYERS){
+            throw new IllegalArgumentException("There is no layer " + layer + ".");
+        }
+    }
+
+    /**
+     * Print functions meant to aid in debugging
+     */
+
+    /**
+     * Prints out every weight that points to a given neuron
+     * @param layer: Layer of the target neuron
+     * @param place: Place of target neuron in layer
+     */
+    public void printWeightsTo(int layer, int place){
+        validateLayer(layer);
+
+        if (layer == 1) {
+            throw new IllegalArgumentException("Neurons on layer 1 has no weights pointing to them.");
+        }
+
+        for(int i = 0; i < numNeuronsLayer[layer]; i++){
+            System.out.print(weights[getWeightIndex((layer - 1), i, layer, place)] + " ");
+        }
+    }
+
+    /**
+     * Prints out the weighted sum of every neuron on a given layer
+     * @param layer: The layer whoes neurons we wish to print
+     */
+    public void printWeightedSums(int layer){
+        validateLayer(layer);
+
+        for(int i = 0; i < numNeuronsLayer[layer]; i++){
+            System.out.println(neuronWeightedSums[getNeuronIndex(layer, i)] + " ");
+        }
+    }
+
     /**
      * Public "get" functions"
      */
@@ -429,7 +473,7 @@ public class NeuralNetwork {
     
 
     public long getSeed()                                                                   { return seed;}
-    public int getlayerSize(int layer)                                                        { return numNeuronsLayer[layer - 1];}
+    public int getlayerSize(int layer)                                                      { return numNeuronsLayer[layer - 1];}
     public int getNumNeuronsL1()                                                            { return numNeuronsLayer[0];}
     public int getNumNeuronsL2()                                                            { return numNeuronsLayer[1];}
     public int getNumNeuronsL3()                                                            { return numNeuronsLayer[2];}

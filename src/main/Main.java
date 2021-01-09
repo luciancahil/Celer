@@ -14,9 +14,11 @@ public class Main {
 
         //setData("data/mnist_digits.csv", inputArray, outputArray);
 
-        NeuralNetwork network = new NeuralNetwork(5, 2);
+        NeuralNetwork network = new NeuralNetwork(5, 2, 769706441478710272L);
         network.runExample(input);
-        System.out.println(network.getlayerSize(2));
+        System.out.println(network.getSeed());
+
+
     }
 
     /**
