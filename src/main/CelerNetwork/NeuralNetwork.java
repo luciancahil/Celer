@@ -374,12 +374,20 @@ public class NeuralNetwork {
      * @return the value of the cost function
      */
     public double getCost(double[] input, double[] target){
+        validateInput(input);
+        validateOutput(target);
+
+        // the value of the cost function
         double cost = 0;
 
+        // run the neural network with current parameters
         runExample(input);
 
+        // cycle through each neuron in the output layer, and check it against the target
         for(int i = 1; i <= numNeuronsLayer[NUM_LAYERS - 1]; i++){
             double diff = target[i] - neuronWeightedSums[getNeuronIndex(NUM_LAYERS, i)];
+
+            // add the square of each difference to the cost value
             cost += Math.pow(diff, 2);
         }
 
@@ -392,15 +400,14 @@ public class NeuralNetwork {
      * @throws IllegalArgumentException if the input array does not have the same number of entries as the input layer
      */
     public void runExample(double[] input) throws IllegalArgumentException{
-        // number of neurons in the input layer
-        int inputSize = numNeuronsLayer[0];
 
-        if(input.length != inputSize){
-            throw new IllegalArgumentException("The input array should have " + inputSize + " entries instead of " + input.length + ".");
-        }
+
+
+        validateInput(input);
+
 
         // Fills the input layer of the neural network with data from the input array
-        for(int i = 0; i < inputSize; i++){
+        for(int i = 0; i < numNeuronsLayer[0]; i++){
             if(input[i] < 0){
                 throw new IllegalArgumentException("Negative values are not permitted as inputs");
             }
@@ -442,6 +449,26 @@ public class NeuralNetwork {
     private void validateLayer(int layer){
         if(layer <= 0 || layer > NUM_LAYERS){
             throw new IllegalArgumentException("There is no layer " + layer + ".");
+        }
+    }
+
+    /**
+     * Checks if a given input is valid for the neural network
+     * @param array: the array we are checking
+     */
+    private void validateInput(double[] array){
+        if(array.length != numNeuronsLayer[0]){
+            throw new IllegalArgumentException("The input array should have " + numNeuronsLayer[0] + " entries instead of " + array.length + ".");
+        }
+    }
+
+    /**
+     * Checks if a given output is valid for the neural network
+     * @param array: the array we are checking
+     */
+    private void validateOutput(double[] array){
+        if(array.length != numNeuronsLayer[0]){
+            throw new IllegalArgumentException("The output array should have " + numNeuronsLayer[0] + " entries instead of " + array.length + ".");
         }
     }
 
