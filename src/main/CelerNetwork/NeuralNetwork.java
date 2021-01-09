@@ -63,6 +63,7 @@ public class NeuralNetwork {
     // the seed used to generate the initial values in the network
     private final long seed;
 
+
     // the array that stores the number of neurons in each layer. numNeuronsLayer[0] stores the
     // number of neurons in the first layer
     private final int[] numNeuronsLayer;
@@ -204,11 +205,11 @@ public class NeuralNetwork {
 
         System.out.println(getNumWeights());
 
-        System.out.println(getWeightIndex(1, 10, 2, 23));
+        System.out.println(getWeightIndex(1, 2, 2, 1));
     }
 
     /**
-     * Purpose: Generates a random value between -10 and 10 for every weight and bias.
+     * Sets every weight and bias to a random value between -10 and 10
      */
     private void generateWeights(){
         Random rand = new Random(seed);
@@ -364,6 +365,29 @@ public class NeuralNetwork {
         index += neuronTwoPlace - 1;
 
         return index;
+    }
+
+    /**
+     *
+     * @param input: The array that will supply information to the input layer.
+     * @throws IllegalArgumentException if the input array does not have the same number of entries as the input layer
+     */
+    private void runExample(double[] input) throws IllegalArgumentException{
+        int inputSize = numNeuronsLayer[0];
+        if(input.length != inputSize){
+            throw new IllegalArgumentException("The input array should have " + inputSize + " entries.");
+        }
+
+        // Fills the input layer of the neural network with data from the input array
+        for(int i = 0; i < inputSize; i++){
+            neurons[i] = input[i];
+        }
+
+
+        // sets the hidden layers
+
+
+        // sets the final layers
     }
 
     /**
