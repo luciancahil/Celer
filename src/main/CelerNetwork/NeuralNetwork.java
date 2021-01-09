@@ -64,6 +64,7 @@ public class NeuralNetwork {
     // the seed used to generate the initial values in the network
     private final long seed;
 
+    private final static int NUM_LAYERS = 4;
 
     // the array that stores the number of neurons in each layer. numNeuronsLayer[0] stores the
     // number of neurons in the first layer
@@ -412,19 +413,31 @@ public class NeuralNetwork {
     /**
      * Public "get" functions"
      */
-    public long getSeed()                   { return seed;}
-    public int getNumNeuronsL1()            { return numNeuronsLayer[0];}
-    public int getNumNeuronsL2()            { return numNeuronsLayer[1];}
-    public int getNumNeuronsL3()            { return numNeuronsLayer[2];}
-    public int getNumNeuronsL4()            { return numNeuronsLayer[3];}
-    public int getNumNeurons()              { return numNeurons;}
-    public int getNumBiases()               { return numBiases;}
-    public int getNumWeights()              { return numWeights;}
-    public double getNeuron(int index)      { return neuronWeightedSums[index];}
-    public double getWeight(int index)      { return weights[index];}
-    public double getBias(int index)        { return biases[index];}
 
-    public static void main(String[] args){
+    public double getActivation(int layer, int number){
+        double weightedSum = neuronWeightedSums[getNeuronIndex(layer, number)];
+        double activation;
 
+        if(layer < NUM_LAYERS){
+            activation = NeuralMath.leakyRELU(weightedSum);
+        }else{
+            activation = NeuralMath.sigmoid(weightedSum);
+        }
+
+        return activation;
     }
+    
+
+    public long getSeed()                                                                   { return seed;}
+    public int layerSize(int layer)                                                         { return numNeuronsLayer[layer - 1];}
+    public int getNumNeuronsL1()                                                            { return numNeuronsLayer[0];}
+    public int getNumNeuronsL2()                                                            { return numNeuronsLayer[1];}
+    public int getNumNeuronsL3()                                                            { return numNeuronsLayer[2];}
+    public int getNumNeuronsL4()                                                            { return numNeuronsLayer[3];}
+    public int getNumNeurons()                                                              { return numNeurons;}
+    public int getNumBiases()                                                               { return numBiases;}
+    public int getNumWeights()                                                              { return numWeights;}
+    public double getWeightedSum(int layer, int place)                                      { return neuronWeightedSums[getNeuronIndex(layer, place)]; }
+    public double getBias(int layer, int place)                                             { return biases[getBiasIndex(layer, place)];}
+    public double getWeight(int layerOne, int placeOne, int layerTwo, int placeTwo)         { return weights[getWeightIndex(layerOne, placeOne, layerTwo, placeTwo)];}
 }

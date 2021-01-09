@@ -11,13 +11,11 @@ public class Main {
         //double[][] inputArray = new double[60000][784];
         //double[][]  outputArray = new double[60000][10];
         double[] input = {1.3, 6.4, 7.8, 9.9, 2.3};
-        double[] tooMany = new double[6];
-        double[] tooFew = new double[4];
 
         //setData("data/mnist_digits.csv", inputArray, outputArray);
 
         NeuralNetwork network = new NeuralNetwork(5, 2);
-        network.runExample(tooMany);
+        network.runExample(input);
     }
 
     /**
