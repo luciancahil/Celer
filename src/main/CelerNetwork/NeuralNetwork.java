@@ -385,7 +385,7 @@ public class NeuralNetwork {
 
         // cycle through each neuron in the output layer, and check it against the target
         for(int i = 1; i <= numNeuronsLayer[NUM_LAYERS - 1]; i++){
-            double diff = target[i] - neuronWeightedSums[getNeuronIndex(NUM_LAYERS, i)];
+            double diff = target[i] - NeuralMath.sigmoid(neuronWeightedSums[getNeuronIndex(NUM_LAYERS, i)]);
 
             // add the square of each difference to the cost value
             cost += Math.pow(diff, 2);
