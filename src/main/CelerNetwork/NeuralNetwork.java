@@ -388,12 +388,12 @@ public class NeuralNetwork {
         Sets the value of the weightedSums array for every layer past the first.
         We are not storing the actual activation; only the weighted sum.
          */
-        for(int layer = 1; layer < numNeuronsLayer.length; layer++){    // for every layer from the second to the last
-            for(int receivingNeuron = 0; receivingNeuron < numNeuronsLayer[layer]; receivingNeuron++){ // for every neuron in the current layer
+        for(int layer = 2; layer <= numNeuronsLayer.length; layer++){    // for every layer from the second to the last
+            for(int receivingNeuron = 1; receivingNeuron <= numNeuronsLayer[layer - 1]; receivingNeuron++){ // for every neuron in the current layer
                 double weightedSum = biases[getBiasIndex(layer, receivingNeuron)]; // the weighted sum we are calculating.
 
                 // for every neuron in the previous layer
-                for(int inputNeuron = 0; inputNeuron < numNeuronsLayer[layer - 1]; inputNeuron++){
+                for(int inputNeuron = 1; inputNeuron <= numNeuronsLayer[layer - 1]; inputNeuron++){
                     // add the activation of every neuron in the previous layer times the weight between said neuron and the recieving neuron
                     weightedSum += NeuralMath.leakyRELU(neuronWeightedSums[getNeuronIndex((layer - 1), inputNeuron)]) * weights[getWeightIndex((layer - 1), inputNeuron, layer, receivingNeuron)];
                 }
@@ -429,7 +429,7 @@ public class NeuralNetwork {
     
 
     public long getSeed()                                                                   { return seed;}
-    public int layerSize(int layer)                                                         { return numNeuronsLayer[layer - 1];}
+    public int getlayerSize(int layer)                                                        { return numNeuronsLayer[layer - 1];}
     public int getNumNeuronsL1()                                                            { return numNeuronsLayer[0];}
     public int getNumNeuronsL2()                                                            { return numNeuronsLayer[1];}
     public int getNumNeuronsL3()                                                            { return numNeuronsLayer[2];}

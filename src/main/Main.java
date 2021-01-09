@@ -16,6 +16,7 @@ public class Main {
 
         NeuralNetwork network = new NeuralNetwork(5, 2);
         network.runExample(input);
+        System.out.println(network.getlayerSize(2));
     }
 
     /**
