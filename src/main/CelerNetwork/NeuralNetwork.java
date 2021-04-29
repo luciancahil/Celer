@@ -5,9 +5,8 @@ import java.util.Random;
 import java.util.HashSet;
 import main.CelerNetwork.NeuralMath.NeuralMath;
 
-//TODO implement a "run" of the neural network based on data
-//TODO implement a cost function
-//TODO change number of neurons into an array for each layer
+//TODO start calculating gradient
+//TODO add learning rate calculation function
 
 /**
  * The Notation used in this documentation obeys the following conventions:
@@ -331,6 +330,14 @@ public class NeuralNetwork {
         return index;
     }
 
+    /**
+     * Gets the index of a desired weight
+     * @param neuronOneLayer the layer of the first neuron
+     * @param neuronOnePlace the place of the first neuron in its layer
+     * @param neuronTwoLayer the layer of the second neuron
+     * @param neuronTwoPlace the place of the second neuron in its layer
+     * @return the index of the weight in the weights array connecting the 2 neurons
+     */
     private int getWeightIndex(int neuronOneLayer, int neuronOnePlace, int neuronTwoLayer, int neuronTwoPlace){
         if(neuronOneLayer > 4 || neuronOneLayer < 1 || neuronTwoLayer > 4 || neuronTwoLayer < 1){
             throw new IllegalArgumentException("The layer number must be between 1 and 4.");
@@ -438,9 +445,6 @@ public class NeuralNetwork {
                 neuronWeightedSums[getNeuronIndex(receivingLayer, receivingNeuron)] = weightedSum;
             }
         }
-
-
-        // sets the final layers
     }
 
 
@@ -474,7 +478,7 @@ public class NeuralNetwork {
         }
     }
 
-    /**
+    /*
      * Print functions meant to aid in debugging
      */
 
@@ -525,14 +529,21 @@ public class NeuralNetwork {
         }
     }
 
+    /**
+     * Prints all the activations (not weighted sums) of a layer
+     * @param layer the layer whose activations we will print
+     */
     public void printActivation(int layer){
         validateLayer(layer);
 
         if(layer == NUM_LAYERS){
+            // if we are on the last layer, we must run the weighted sums through the sigmoid formula
             for(int i = 1; i <= numNeuronsLayer[layer - 1]; i++){
                 System.out.print(NeuralMath.sigmoid(neuronWeightedSums[getNeuronIndex(layer, i)]) + " ");
             }
         }else{
+            // if we are not on the last layer,
+            // we must run the weighted sums through the leaky RELU formula
             for(int i = 1; i <= numNeuronsLayer[layer - 1]; i++){
                 System.out.print(NeuralMath.leakyRELU(neuronWeightedSums[getNeuronIndex(layer, i)]) + " ");
             }
@@ -558,7 +569,7 @@ public class NeuralNetwork {
     
 
     public long getSeed()                                                                   { return seed;}
-    public int getlayerSize(int layer)                                                      { return numNeuronsLayer[layer - 1];}
+    public int getLayerSize(int layer)                                                      { return numNeuronsLayer[layer - 1];}
     public int getNumNeuronsL1()                                                            { return numNeuronsLayer[0];}
     public int getNumNeuronsL2()                                                            { return numNeuronsLayer[1];}
     public int getNumNeuronsL3()                                                            { return numNeuronsLayer[2];}
