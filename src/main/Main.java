@@ -15,11 +15,15 @@ public class Main {
 
         //setData("data/mnist_digits.csv", inputArray, outputArray);
 
-        NeuralNetwork network = new NeuralNetwork(2, 2);
+        NeuralNetwork network = new NeuralNetwork(2, 2,2609597136942243840l);
 
+
+        System.out.println("Seed: " + network.getSeed());
+        network.runExample(input);
+        System.out.println("Cost:");
         System.out.println(network.getCost(input, target));
         network.printWeightedSums(4);
-        System.out.println();
+        System.out.println("Activations:");
         network.printActivation(4);
     }
 

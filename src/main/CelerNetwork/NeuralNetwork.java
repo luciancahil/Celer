@@ -394,7 +394,7 @@ public class NeuralNetwork {
         for(int i = 1; i <= numNeuronsLayer[NUM_LAYERS - 1]; i++){
             // calculate the difference between actual and desired activation.
             // runs the weighted sum through sigmoid to get activation value
-            double diff = target[i - 1] - NeuralMath.sigmoid(neuronWeightedSums[getNeuronIndex(NUM_LAYERS, i)]);
+            double diff = target[i - 1] - getActivation(NUM_LAYERS, i);
 
             // add the square of each difference to the cost value
             cost += Math.pow(diff, 2);
@@ -536,24 +536,22 @@ public class NeuralNetwork {
     public void printActivation(int layer){
         validateLayer(layer);
 
-        if(layer == NUM_LAYERS){
-            // if we are on the last layer, we must run the weighted sums through the sigmoid formula
-            for(int i = 1; i <= numNeuronsLayer[layer - 1]; i++){
-                System.out.print(NeuralMath.sigmoid(neuronWeightedSums[getNeuronIndex(layer, i)]) + " ");
-            }
-        }else{
-            // if we are not on the last layer,
-            // we must run the weighted sums through the leaky RELU formula
-            for(int i = 1; i <= numNeuronsLayer[layer - 1]; i++){
-                System.out.print(NeuralMath.leakyRELU(neuronWeightedSums[getNeuronIndex(layer, i)]) + " ");
-            }
+
+        for(int i = 1; i <= numNeuronsLayer[layer - 1]; i++){
+            System.out.print(getActivation(layer, i) + " ");
         }
     }
 
-    /**
+    /*
      * Public "get" functions"
      */
 
+    /**
+     * Gets the activation of a given neuron
+     * @param layer layer of neuron who's activation we want
+     * @param number place of neuron in layer
+     * @return activation of a given neuron
+     */
     public double getActivation(int layer, int number){
         double weightedSum = neuronWeightedSums[getNeuronIndex(layer, number)];
         double activation;
