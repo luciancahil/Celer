@@ -51,11 +51,11 @@ import main.CelerNetwork.NeuralMath.NeuralMath;
  * Every neuron in a given layer except the first is connected to each neuron in the previous
  * layer by a weight. The activation of each neuron is multiplied by the corresponding weight,
  * and then a bias is added to each neuron in order to create a weighted sum. That weighted
- * sum is then run through a RELU function for each hidden layer, or through the Sigmoid
+ * sum is then run through a leaky RELU function for each hidden layer, or through the Sigmoid
  * function for the output layer in order to get the activation of the given neuron.
  *
  * That is, the activation of a given neuron not on the input layer is equal to either the
- * RELU or the sigmoid of the sum of every activation value in previous layer multiplied
+ * leaky RELU or the sigmoid of the sum of every activation value in previous layer multiplied
  * by a given weight connecting the two neurons plus a given bias.
  */
 
@@ -332,17 +332,16 @@ public class NeuralNetwork {
 
     /**
      * Gets the index of a desired weight
-     * @param neuronOneLayer the layer of the first neuron
      * @param neuronOnePlace the place of the first neuron in its layer
      * @param neuronTwoLayer the layer of the second neuron
      * @param neuronTwoPlace the place of the second neuron in its layer
      * @return the index of the weight in the weights array connecting the 2 neurons
      */
-    private int getWeightIndex(int neuronOneLayer, int neuronOnePlace, int neuronTwoLayer, int neuronTwoPlace){
-        if(neuronOneLayer > 4 || neuronOneLayer < 1 || neuronTwoLayer > 4 || neuronTwoLayer < 1){
-            throw new IllegalArgumentException("The layer number must be between 1 and 4.");
-        }else if((neuronTwoLayer - neuronOneLayer) != 1){
-            throw new IllegalArgumentException("The second neuron must be in the layer directly after the first neuron.");
+    private int getWeightIndex(int neuronOnePlace, int neuronTwoLayer, int neuronTwoPlace){
+        int neuronOneLayer = neuronTwoLayer - 1;
+
+        if(neuronTwoLayer > 4 || neuronTwoLayer <= 1){
+            throw new IllegalArgumentException("The second layer number must be between 2 and 4.");
         }else if(neuronOnePlace > numNeuronsLayer[neuronOneLayer - 1] || neuronOnePlace < 1){
             throw new IllegalArgumentException("The is no neuron number " + neuronOnePlace + " in layer " + neuronOneLayer + ".");
         }else if(neuronTwoPlace > numNeuronsLayer[neuronTwoLayer - 1] || neuronTwoPlace < 1){
@@ -393,7 +392,6 @@ public class NeuralNetwork {
         // cycle through each neuron in the output layer, and check it against the target
         for(int i = 1; i <= numNeuronsLayer[NUM_LAYERS - 1]; i++){
             // calculate the difference between actual and desired activation.
-            // runs the weighted sum through sigmoid to get activation value
             double diff = target[i - 1] - getActivation(NUM_LAYERS, i);
 
             // add the square of each difference to the cost value
@@ -435,7 +433,7 @@ public class NeuralNetwork {
                 // for every neuron in the previous layer
                 for(int inputNeuron = 1; inputNeuron <= numNeuronsLayer[(receivingLayer - 1) - 1]; inputNeuron++){
                     // add the activation of every neuron in the previous layer times the weight between said neuron and the recieving neuron
-                    weightedSum += NeuralMath.leakyRELU(neuronWeightedSums[getNeuronIndex((receivingLayer - 1), inputNeuron)]) * weights[getWeightIndex((receivingLayer - 1), inputNeuron, receivingLayer, receivingNeuron)];
+                    weightedSum += NeuralMath.leakyRELU(neuronWeightedSums[getNeuronIndex((receivingLayer - 1), inputNeuron)]) * weights[getWeightIndex(inputNeuron, receivingLayer, receivingNeuron)];
                 }
 
                 /* store the weighted sum in the neurons array
@@ -497,7 +495,7 @@ public class NeuralNetwork {
 
         // prints the number of weights connecting to this layer for each neuron in the previous layer
         for(int i = 1; i <= numNeuronsLayer[(layer - 1) - 1]; i++){
-            System.out.print(weights[getWeightIndex((layer - 1), i, layer, place)] + " ");
+            System.out.print(weights[getWeightIndex(i, layer, place)] + " ");
         }
     }
 
@@ -577,5 +575,5 @@ public class NeuralNetwork {
     public int getNumWeights()                                                              { return numWeights;}
     public double getWeightedSum(int layer, int place)                                      { return neuronWeightedSums[getNeuronIndex(layer, place)]; }
     public double getBias(int layer, int place)                                             { return biases[getBiasIndex(layer, place)];}
-    public double getWeight(int layerOne, int placeOne, int layerTwo, int placeTwo)         { return weights[getWeightIndex(layerOne, placeOne, layerTwo, placeTwo)];}
+    public double getWeight(int placeOne, int layerTwo, int placeTwo)         { return weights[getWeightIndex(placeOne, layerTwo, placeTwo)];}
 }
