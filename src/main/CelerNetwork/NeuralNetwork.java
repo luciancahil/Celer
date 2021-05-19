@@ -78,6 +78,8 @@ public class NeuralNetwork {
     // the number of weights
     private final int numWeights;
 
+
+
     // the number of examples supplied to the network
     private int numExamples;
 
@@ -109,11 +111,6 @@ public class NeuralNetwork {
      */
     private final double[] weights;
 
-    /*
-     * The array where the necessary changes to the weights of the neural network after one round of training
-     * is stored.
-     */
-    private final double[] weightNudges;
 
     /*
      * the double array where the value of each bias is stored
@@ -122,11 +119,6 @@ public class NeuralNetwork {
      */
     private final double[] biases;
 
-    /*
-     * The array where the necessary changes to the biases of the neural network after one round of training
-     * is stored.
-     */
-    private final double[] biasNudges;
 
 
     /*
@@ -207,11 +199,9 @@ public class NeuralNetwork {
         /* there is a bias for every neuron not in the first layer */
         this.numBiases = numNeurons - numNeuronsLayer[0];
         biases = new double[numBiases];
-        biasNudges = new double[numBiases];
 
         this.numWeights = numNeuronsLayer[0]  * numNeuronsLayer[1]  + numNeuronsLayer[1]  * numNeuronsLayer[2]  + numNeuronsLayer[2]  * numNeuronsLayer[3];
         weights = new double[numWeights];
-        weightNudges = new double[numWeights];
 
         generateWeights();
 
@@ -556,6 +546,18 @@ public class NeuralNetwork {
      * @param biasNudge: the array that stores the desired nudges
      */
     private void calculateBiasNudges(double[] biasNudge) {
+        calculateBiasNudgesL2(biasNudge);
+        calculateBiasNudgesL3(biasNudge);
+        calculateBiasNudgesL4(biasNudge);
+    }
+
+    private void calculateBiasNudgesL4(double[] biasNudge) {
+    }
+
+    private void calculateBiasNudgesL3(double[] biasNudge) {
+    }
+
+    private void calculateBiasNudgesL2(double[] biasNudge) {
     }
 
     /**
@@ -563,8 +565,33 @@ public class NeuralNetwork {
      * @param weightNudge: the array that stores the desired nudges
      */
     private void calculateWeightNudges(double[] weightNudge) {
-
+        calculateWeightNudgesL2(weightNudge);
+        calculateWeightNudgesL3(weightNudge);
+        calculateWeightNudgesL4(weightNudge);
     }
+
+    /**
+     * Calcualates how much we should nudge each weight pointing to layer 2 according to the current data set
+     * @param weightNudge: the array that stores the desired nudges
+     */
+    private void calculateWeightNudgesL2(double[] weightNudge) {
+    }
+
+    /**
+     * Calcualates how much we should nudge each weight pointing to layer 3 according to the current data set
+     * @param weightNudge: the array that stores the desired nudges
+     */
+    private void calculateWeightNudgesL3(double[] weightNudge) {
+    }
+
+    /**
+     * Calcualates how much we should nudge each weight pointing to  layer 4 according to the current data set
+     * @param weightNudge: the array that stores the desired nudges
+     */
+    private void calculateWeightNudgesL4(double[] weightNudge) {
+    }
+
+
 
 
 
