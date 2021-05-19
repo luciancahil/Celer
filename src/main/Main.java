@@ -15,14 +15,17 @@ public class Main {
 
         //setData("data/mnist_digits.csv", inputArray, outputArray);
 
-        NeuralNetwork network = new NeuralNetwork(20, 5);
+        NeuralNetwork network = new NeuralNetwork(1, 1);
 
-        System.out.println("Reluderiv of 3 " + NeuralMath.reluDeriv(3));
-        System.out.println("Reluderiv of -3 " + NeuralMath.reluDeriv(-3));
-        System.out.println("SigmoidDeriv of 3 " + NeuralMath.sigmoid(3));
-        System.out.println("SigmoidDeriv of -3 " + NeuralMath.sigmoid(-3));
+        double[] test = {5, 4, 3, 2, 1};
 
-        System.out.println(network.getWeightIndex(10, 3, 5));
+        double[] next = {1, 1, 1, 1, 1};
+
+        NeuralNetwork.updateRollingAvgs(next, test, 7);
+
+        for(int i = 0; i < 5; i++){
+            System.out.println(next[i]);
+        }
     }
 
 
