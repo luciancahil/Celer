@@ -110,11 +110,23 @@ public class NeuralNetwork {
     private final double[] weights;
 
     /*
+     * The array where the necessary changes to the weights of the neural network after one round of training
+     * is stored.
+     */
+    private final double[] weightNudges;
+
+    /*
      * the double array where the value of each bias is stored
      * the index of each bias corresponds to the index of the neuron in the neurons array - numNeuronsL1.
      * since neurons in the first layer do not have bias
      */
     private final double[] biases;
+
+    /*
+     * The array where the necessary changes to the biases of the neural network after one round of training
+     * is stored.
+     */
+    private final double[] biasNudges;
 
 
     /*
@@ -195,9 +207,11 @@ public class NeuralNetwork {
         /* there is a bias for every neuron not in the first layer */
         this.numBiases = numNeurons - numNeuronsLayer[0];
         biases = new double[numBiases];
+        biasNudges = new double[numBiases];
 
         this.numWeights = numNeuronsLayer[0]  * numNeuronsLayer[1]  + numNeuronsLayer[1]  * numNeuronsLayer[2]  + numNeuronsLayer[2]  * numNeuronsLayer[3];
         weights = new double[numWeights];
+        weightNudges = new double[numWeights];
 
         generateWeights();
     }
@@ -473,6 +487,62 @@ public class NeuralNetwork {
     private void validateOutput(double[] array){
         if(array.length != numNeuronsLayer[0]){
             throw new IllegalArgumentException("The output array should have " + numNeuronsLayer[0] + " entries instead of " + array.length + ".");
+        }
+    }
+
+    /**
+     * The function that runs to do the training and learning of the network
+     */
+    private void train(){
+        // a running average of how much we should nudge the biases
+        final double[] avgBiasNudge = new double[numBiases];
+
+        // a running average of how much we should nudge the weights
+        final double[] avgWeightNudge = new double[numWeights];
+
+        // the bias nudges desired by a single set of data
+        final double[] biasNudge = new double[numWeights];
+
+        // the weigh nudges desired by a single set of data
+        final double[] weightNudge = new double[numWeights];
+
+        // rather than running through all training data every round, run through a batch
+        // this controls how many numbers are in each batch
+        final int batchSize = 100;
+
+        // the number of batches we can afford to run with the number of training examples
+        final int numBatches = numTrainingExamples / batchSize + 1;
+
+        // the size of the current batch.
+        // will be equal to batchSize variable except for the last value, which will
+        // include any straggles (if there are 299 examples, the last batch will have 199 members)
+        int curBatchSize;
+
+        for(int i = 0; i < numBatches; i++){
+            // setting cur batch size
+
+            if(i < numBatches - 1){
+                // not the final batch
+                curBatchSize = batchSize;
+            }else{
+                // on final batch
+                curBatchSize = batchSize + numTrainingExamples % batchSize;
+            }
+
+
+            // the following loop runs through a single batch
+
+            for(int j = 0; j < curBatchSize; j++){
+                // runs the network with the proper data as input
+                runExample(trainingDataInput[j + batchSize * i]);
+
+                // set proper values for biasNudge
+
+                // set Proper values for weighNudge
+
+                // add values to the running averages
+            }
+
         }
     }
 
