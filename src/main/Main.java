@@ -17,18 +17,16 @@ public class Main {
 
         NeuralNetwork network = new NeuralNetwork(1, 1);
 
-        double[] test = {5, 4, 3, 2, 1};
+        double[] test = {0};
 
-        double[] next = {1, 1, 1, 1, 1};
+        double[] next = {2};
 
-        NeuralMath.updateRollingAvgs(next, test, 7);
+        NeuralMath.updateRollingAvgs(test, next, 2);
 
-        for(int i = 0; i < 5; i++){
-            System.out.println(next[i]);
+        for(int i = 0; i < 1; i++){
+            System.out.println(test[i]);
         }
     }
-
-
 
     /**
      *

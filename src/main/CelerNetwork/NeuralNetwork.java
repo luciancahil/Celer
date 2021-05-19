@@ -538,13 +538,23 @@ public class NeuralNetwork {
                 runExample(trainingDataInput[j + batchSize * i]);
 
                 // set proper values for biasNudge
+                calculateBiasNudges(biasNudge);
 
                 // set Proper values for weighNudge
+                calculateWeightNudges(weightNudge);
 
                 // add values to the running averages
+                NeuralMath.updateRollingAvgs(avgBiasNudge,biasNudge,j);
+                NeuralMath.updateRollingAvgs(avgWeightNudge,weightNudge,j);
             }
 
         }
+    }
+
+    private void calculateWeightNudges(double[] weightNudge) {
+    }
+
+    private void calculateBiasNudges(double[] biasNudge) {
     }
 
 
