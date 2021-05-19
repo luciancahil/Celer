@@ -337,7 +337,7 @@ public class NeuralNetwork {
      * @param neuronTwoPlace the place of the second neuron in its layer
      * @return the index of the weight in the weights array connecting the 2 neurons
      */
-    private int getWeightIndex(int neuronOnePlace, int neuronTwoLayer, int neuronTwoPlace){
+    public int getWeightIndex(int neuronOnePlace, int neuronTwoLayer, int neuronTwoPlace){
         int neuronOneLayer = neuronTwoLayer - 1;
 
         if(neuronTwoLayer > 4 || neuronTwoLayer <= 1){

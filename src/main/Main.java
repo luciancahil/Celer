@@ -15,16 +15,14 @@ public class Main {
 
         //setData("data/mnist_digits.csv", inputArray, outputArray);
 
-        NeuralNetwork network = new NeuralNetwork(2, 2,2609597136942243840l);
+        NeuralNetwork network = new NeuralNetwork(20, 5);
 
+        System.out.println("Reluderiv of 3 " + NeuralMath.reluDeriv(3));
+        System.out.println("Reluderiv of -3 " + NeuralMath.reluDeriv(-3));
+        System.out.println("SigmoidDeriv of 3 " + NeuralMath.sigmoid(3));
+        System.out.println("SigmoidDeriv of -3 " + NeuralMath.sigmoid(-3));
 
-        System.out.println("Seed: " + network.getSeed());
-        network.runExample(input);
-        System.out.println("Cost:");
-        System.out.println(network.getCost(input, target));
-        network.printWeightedSums(4);
-        System.out.println("Activations:");
-        network.printActivation(4);
+        System.out.println(network.getWeightIndex(10, 3, 5));
     }
 
 

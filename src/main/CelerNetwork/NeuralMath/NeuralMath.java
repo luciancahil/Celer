@@ -15,7 +15,20 @@ public class NeuralMath {
         if(input >= 0){
             return input;
         }else{
-            return input *= LEAKY_COEFFICIENT;
+            return input * LEAKY_COEFFICIENT;
+        }
+    }
+
+    /**
+     * Returns the derivative of the RELU function based on a given input
+     * @param input the input to the RELU function
+     * @return derivative of the RELU function
+     */
+    public static double reluDeriv(double input){
+        if(input >= 0){
+            return 1;
+        }else{
+            return LEAKY_COEFFICIENT;
         }
     }
 
@@ -29,6 +42,13 @@ public class NeuralMath {
      */
     public static double sigmoid(double input){
         return 1.0 / (1 + Math.pow(Math.E, input * - 1));
+    }
+
+
+    public static double sigmoidDeriv(double input){
+        double exp = Math.exp(input);
+
+        return exp / Math.pow(1 + exp, 2);
     }
 
 }
