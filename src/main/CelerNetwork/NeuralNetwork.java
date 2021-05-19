@@ -266,8 +266,8 @@ public class NeuralNetwork {
                 chosen = rand.nextInt() % numExamples;
             }
 
-            testingDataInput[chosen] = input[chosen];
-            testingDataInput[chosen] = output[chosen];
+            testingDataInput[i] = input[chosen];
+            testingDataOutput[i] = output[chosen];
         }
 
 
@@ -551,11 +551,22 @@ public class NeuralNetwork {
         }
     }
 
-    private void calculateWeightNudges(double[] weightNudge) {
-    }
-
+    /**
+     * Calculates how much we should nedge each bias according to the current dataset
+     * @param biasNudge: the array that stores the desired nudges
+     */
     private void calculateBiasNudges(double[] biasNudge) {
     }
+
+    /**
+     * Calcualates how much we should nudge each weight according to the current data set
+     * @param weightNudge: the array that stores the desired nudges
+     */
+    private void calculateWeightNudges(double[] weightNudge) {
+
+    }
+
+
 
 
     /*
