@@ -10,12 +10,14 @@ import main.CelerNetwork.NeuralMath.NeuralMath;
 
 /**
  * The Notation used in this documentation obeys the following conventions:
+ * Cost: C - Refers to the output of the cost function
  * Neuron: N(a, b) - Refers to the bth neuron in the ath layer
  * Bias: B(a, b) -  Refers to the bias of the  bth neuron in the ath layer
  * Weight: W(a, b, c) - Refers to the weight that connects the bth neuron
  *  in the (a - 1)th layer to the cth neuron in the ath layer.
  * Weighted Sum: Z(a, b): Refers to the weighted sum of the bth neuron in the
  *  ath layer
+ *  dx/dy: the change in x (cost function, activation, etc) due to y (cost, weight, bias, etc)
  *
  * Examples:
  * Neuron: N(2, 3) - Refers to the third neuron in the second layer.
@@ -23,6 +25,7 @@ import main.CelerNetwork.NeuralMath.NeuralMath;
  * Weight: W(3, 1, 2) - Refers to the weight that connects the first neuron
  *  in the second layer to the second neuron in the third layer.
  * Weighted Sum: Z(2, 3): Refers to the weighted sum of the third neuron in the second layer
+ * dC/dN(1,2) Refers to how much chaning the 2nd neuron in the first layer will affect the cost function
  *
  * Implementation of a Convolution Neural Network. This neural network uses
  * gradient descent and a minimizing cost function in order to achieve basic
@@ -560,7 +563,7 @@ public class NeuralNetwork {
     }
 
     /**
-     * Calculates how much we should nedge each bias according to the current dataset
+     * Calculates how much we should nudge each bias according to the current dataset
      * @param biasNudge: the array that stores the desired nudges
      */
     private void calculateBiasNudges(double[] biasNudge) {
@@ -569,14 +572,90 @@ public class NeuralNetwork {
         calculateBiasNudgesL4(biasNudge);
     }
 
-    private void calculateBiasNudgesL4(double[] biasNudge) {
+
+    /**
+     * Calculates how much we should nudge each bias in layer 2 according to the current dataset
+     * @param biasNudge: the array that stores the desired nudges
+     */
+    private void calculateBiasNudgesL2(double[] biasNudge) {
+        for(int i = 0; i < getNumNeuronsL2(); i++){ // there is an L2 bias for every L2 neuron
+            int neuronIndex = getNeuronIndex(2,i + 1);
+            int biasIndex = getBiasIndex(2,i + 1);
+
+            biasNudge[biasIndex] = getL2BiasNudge(i);
+        }
     }
 
+    /**
+     * Gets the desired nudge of a bias in the second layer
+     * @param place: the placement of the bias within the second layer
+     * @return: the nudge we desire
+     */
+    private double getL2BiasNudge(int place) {
+        if(place >= getNumNeuronsL2()){
+            throw new IllegalArgumentException("There is no neuron " + (place + 1) + " in layer 2.");
+        }
+
+        /*
+         * The goal of the nudges is to minimize the cost function.
+         *
+         * Nudging a bias in layer 2 cannot directly affect the cost function.
+         *
+         * Nudging a bias in layer 2 can affect the weighted sum of its corresponding neuron.
+         *
+         * Due to the chain rule, dC/db = dz/db * dC/dz
+         *
+         * Since we just add the bias to the weighted sum, dz and db have a 1-1 correspondence
+         * based on changes to the bias
+         *
+         * Therefore, dC/db = dC/dz
+         */
+
+        return 0;
+    }
+
+
+    /**
+     * Calculates how much we should nudge each bias in layer 3 according to the current dataset
+     * @param biasNudge: the array that stores the desired nudges
+     */
     private void calculateBiasNudgesL3(double[] biasNudge) {
     }
 
-    private void calculateBiasNudgesL2(double[] biasNudge) {
+    /**
+     * Calculates how much we should nudge each bias in layer 4 according to the current dataset
+     * @param biasNudge: the array that stores the desired nudges
+     */
+    private void calculateBiasNudgesL4(double[] biasNudge) {
+        for(int i = 0; i < getNumNeuronsL4(); i++){ // there is an L4 bias for every L4 neuron
+            int neuronIndex = getNeuronIndex(4,i + 1);
+            int biasIndex = getBiasIndex(4,i + 1);
+
+            biasNudge[biasIndex] = getL4BiasNudge(i);
+        }
     }
+
+    private double getL4BiasNudge(int place) {
+        /*
+         * The goal of the nudges is to minimize the cost function.
+         *
+         * Nudging a bias in layer 2 cannot directly affect the cost function.
+         *
+         * Nudging a bias in layer 2 can affect the weighted sum of its corresponding neuron.
+         *
+         * Due to the chain rule, dC/dB(4,d) = dz/dB(4,d) * dC/dZ(4,d)
+         *
+         * Since we just add the bias to the weighted sum, B(4,d) and Z(4,d) have a 1-1 correspondence
+         * based on changes to the bias
+         *
+         * Therefore, dC/dB(4,d) = dC/dZ(4,d)
+         */
+
+        return weightedNudgeL4(place);
+    }
+
+
+
 
     /**
      * Calcualates how much we should nudge each weight according to the current data set
@@ -612,7 +691,9 @@ public class NeuralNetwork {
 
 
 
-
+    private double weightedNudgeL4(int place) {
+        
+    }
 
     /*
      * Print functions meant to aid in debugging
