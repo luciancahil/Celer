@@ -156,6 +156,9 @@ public class NeuralNetwork {
      */
     private double[][] testingDataOutput;
 
+    // the output we are currently aiming for in a given round of training
+    private double[] currentDesiredOutput;
+
 
     /**
      * Function: Construction of a brand new neural Network with a randomly generated seed
@@ -546,7 +549,10 @@ public class NeuralNetwork {
 
             for(int j = 0; j < curBatchSize; j++){
                 // runs the network with the proper data as input
-                runExample(trainingDataInput[j + batchSize * i]);
+                int dataIndex = j + batchSize * i;
+
+                runExample(trainingDataInput[dataIndex]);
+                currentDesiredOutput = trainingDataOutput[dataIndex];
 
                 // set proper values for biasNudge
                 calculateBiasNudges(biasNudge);
@@ -692,7 +698,7 @@ public class NeuralNetwork {
 
 
     private double weightedNudgeL4(int place) {
-        
+
     }
 
     /*
