@@ -78,6 +78,14 @@ public class NeuralNetwork {
     // the number of weights
     private final int numWeights;
 
+    // the number of weights pointing to layer 2
+    private final int numWeightsTwo;
+
+    // the number of weights pointing to layer 3
+    private final int numWeightsThree;
+
+    // the number of weights pointing to layer 4
+    private final int numWeightsFour;
 
 
     // the number of examples supplied to the network
@@ -200,7 +208,17 @@ public class NeuralNetwork {
         this.numBiases = numNeurons - numNeuronsLayer[0];
         biases = new double[numBiases];
 
-        this.numWeights = numNeuronsLayer[0]  * numNeuronsLayer[1]  + numNeuronsLayer[1]  * numNeuronsLayer[2]  + numNeuronsLayer[2]  * numNeuronsLayer[3];
+
+        this.numWeightsTwo = numNeuronsLayer[0]  * numNeuronsLayer[1];
+        this.numWeightsThree = numNeuronsLayer[1]  * numNeuronsLayer[2];
+        this.numWeightsFour = numNeuronsLayer[2]  * numNeuronsLayer[3];
+
+        System.out.println(numWeightsTwo);
+        System.out.println(numWeightsThree);
+        System.out.println(numWeightsFour);
+
+
+        this.numWeights = numWeightsTwo  + numWeightsThree  + numWeightsFour;
         weights = new double[numWeights];
 
         generateWeights();

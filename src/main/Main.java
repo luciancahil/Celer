@@ -15,17 +15,7 @@ public class Main {
 
         //setData("data/mnist_digits.csv", inputArray, outputArray);
 
-        NeuralNetwork network = new NeuralNetwork(1, 1);
-
-        double[] test = {0};
-
-        double[] next = {2};
-
-        NeuralMath.updateRollingAvgs(next, test, 3);
-
-        for(int i = 0; i < 1; i++){
-            System.out.println(test[i]);
-        }
+        NeuralNetwork network = new NeuralNetwork(10, 40);
     }
 
     /**
