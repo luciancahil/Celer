@@ -51,4 +51,44 @@ public class NeuralMath {
         return exp / Math.pow(1 + exp, 2);
     }
 
+
+    /**
+     * Updates the avgs array by adding newVal to it.
+     *
+     * @param avgs the array containg a running average
+     * @param newVals the values we would like to include in the avgs
+     * @param count the number of values the average has, including the new values
+     */
+    public static void updateRollingAvgs(double[] avgs, double[] newVals, int count){
+        if(avgs.length != newVals.length){
+            throw new IllegalArgumentException("Avgs and NewVals must be same-sized arrays");
+        }
+
+        for(int i = 0; i < avgs.length; i++){
+            avgs[i] = updateRollingAvg(avgs[i], newVals[i], count);
+        }
+    }
+
+    /**
+     * Returns the new rolling average by adding newVal to the average
+     * @param avg the rolling average without newVal
+     * @param newVal the value we wish to add
+     * @param count the number of values the rolling average contains, including newVal
+     * @return
+     */
+    private static double updateRollingAvg(double avg, double newVal, int count) {
+        /*
+         * Proof this works:
+         *
+         * The sum of all values without newVal is equal to avg * (count - 1) = avg * count - avg
+         *
+         * The sum including newVal is avg * count - avg + newVal
+         *
+         * The new average is (avg * count - avg + newVal) / count
+         *
+         * Dividing through ends up with avg - avg / count + newVal / count
+         */
+        return avg - avg/count + newVal/count;
+    }
+
 }

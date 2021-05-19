@@ -21,7 +21,7 @@ public class Main {
 
         double[] next = {1, 1, 1, 1, 1};
 
-        NeuralNetwork.updateRollingAvgs(next, test, 7);
+        NeuralMath.updateRollingAvgs(next, test, 7);
 
         for(int i = 0; i < 5; i++){
             System.out.println(next[i]);
