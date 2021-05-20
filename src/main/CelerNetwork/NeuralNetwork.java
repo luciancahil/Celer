@@ -508,7 +508,7 @@ public class NeuralNetwork {
     /**
      * The function that runs to do the training and learning of the network
      */
-    private void train(){
+    public void train(){
         // a running average of how much we should nudge the biases
         final double[] avgBiasNudge = new double[numBiases];
 
