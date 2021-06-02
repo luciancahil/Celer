@@ -269,13 +269,12 @@ public class NeuralNetwork {
         // randomly assign values to the testing array
 
         for(int i = 0; i < numTestingExamples; i++){
-            int chosen = rand.nextInt() % numExamples;      // the index of an array chosen to be in the training set
+            int chosen = Math.abs(rand.nextInt()) % numExamples;      // the index of an array chosen to be in the training set
 
             // we keep generating until we come up with an index not already in the array.
             while(!isInTesting.add(chosen)){
-                chosen = rand.nextInt() % numExamples;
+                chosen = Math.abs(rand.nextInt()) % numExamples;
             }
-
             testingDataInput[i] = input[chosen];
             testingDataOutput[i] = output[chosen];
         }
@@ -283,12 +282,16 @@ public class NeuralNetwork {
 
         // assign all values not placed into the testing array into the training array;
 
-        for(int i = 0; i < numExamples; i++){
+        for(int i = 0; i < numTrainingExamples; i++){
             if(isInTesting.contains((i))){
                 // the value is in the testing array
                 i++;
             }else{
                 // the value is not in the testing array, so we can put it in the
+                if(i == numTrainingExamples){
+                    continue;
+                }
+
                 trainingDataInput[i] = input[i];
                 trainingDataOutput[i] = output[i];
             }
