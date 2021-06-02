@@ -700,14 +700,8 @@ public class NeuralNetwork {
      * @return the desired nudge
      */
     private double weightedSumNudgeL4(int place) {
-        // add 1 because we are using a z array in the loop we passed this from
+        // add 1 because we are using a zero array in the loop we passed this from
         int neuronIndex = getNeuronIndex(4, place + 1);
-
-        // the activation we wish we had on the current neuron
-        double desiredActivation = currentDesiredOutput[place];
-
-        // activation on the current neuron
-        double actualActivation = getActivation(4, place + 1);
 
         // weighted sum of the neuron we are observing
         double wSum = neuronWeightedSums[neuronIndex];
@@ -715,23 +709,16 @@ public class NeuralNetwork {
         /*
          * The goal of the nudges is to minimize the cost function.
          *
-         * Nudging a weighed sum on Layer 4 can directly affect the cost function
+         * Nudging a weighed sum on Layer 4 cannot directly affect the cost function
          *
          * Nudging a weighted sum can directly affect the activation of a last layer neuron.
          *
-         * Nudging the activation of a last layer neuron can affect the cost function.
-         *
-         * As such dC/dZ(4,d) = dA(4,d)/dZ(4,d) * dC/dZ(4,d)
-         *
-         * Since the cost function is calculated as (desiredActivation - actualActivation) ^2,
-         * dC/dZ(4,d) = 2 * (desiredActivation - actualActivation)
-         *
-         * Since we are on the last layer, the weighted sum becomes the activation through the
-         * sigmoid function. Thus, dA(4,d)/dZ(4,d) is just sigmoid'(Z(4,d))
-         *
-         * The final function is sigmoid'(Z(4,d)) * 2 * (desiredActivation - actualActivation)
+         * The ratio in the change between the change in a last layer activation and a last
+         * layer weighted sum is equal to the derivative of the sigmoid function at the
+         * value of the current weighed sum. Therefore, we will multiply the desired
+         * activation nudge by that value.
          */
-        return NeuralMath.sigmoidDeriv(wSum) * (2 * (desiredActivation - actualActivation));
+        return NeuralMath.sigmoidDeriv(wSum) * activationNudgeL4(place);
     }
 
 
