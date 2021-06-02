@@ -508,6 +508,39 @@ public class NeuralNetwork {
      * The function that runs to do the training and learning of the network
      */
     public void train(){
+        /*
+         * We are trying to calculate the desired "nudges" for weights and biases of a given
+         * batch in the following loop.
+         *
+         * A "nudge" is a small change in value.
+         *
+         * We first divide our total training data into batches of 100 examples.
+         *
+         * Then, we run through each batch of examples.
+         *
+         * When running through a single batch, we will calculate how much it would like to change
+         * every single weight and bias. We call the desired change a "nudge", and will store
+         * them in the biasNudge and weightNudge arrays.
+         *
+         * A very important piece of information in the  nudge arrays is the ratio between parts.
+         * If B(1,2) has a desired nudge of 1 while B(1,3) has a desired nudge of 2, it means that
+         * a change to B(1,3) will do twice as much work as a similar nudge to B(1,2). We should
+         * change the ones with more effect more, as it is possible a part with a small effect in
+         * this sample will have a large effect in another.
+         *
+         * After we run through the batch, we will add it to the running average arrays, that stores
+         * how much and in which direction on average every sample in the batch wants to change
+         * every weight and bias.
+         *
+         * We will then multiply the average desired change by a "learning rate", and then add the
+         * desired changes to the array storing the values of the Weights and biases. If we ever
+         * reach a point where adding this gives us a higher average cost function, we will divide the
+         * learning rate by 10, and try again.
+         *
+         * Once the learning rate becomes 1E-7, we have completed training.
+         *
+         */
+        
         // a running average of how much we should nudge the biases
         final double[] avgBiasNudge = new double[numBiases];
 
@@ -531,6 +564,8 @@ public class NeuralNetwork {
         // will be equal to batchSize variable except for the last value, which will
         // include any straggles (if there are 299 examples, the last batch will have 199 members)
         int curBatchSize;
+
+
 
         for(int i = 0; i < numBatches; i++){
             // setting cur batch size
