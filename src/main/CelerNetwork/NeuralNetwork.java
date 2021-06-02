@@ -656,7 +656,7 @@ public class NeuralNetwork {
          * Therefore, dC/dB(4,d) = dC/dZ(4,d)
          */
 
-        return weightedNudgeL4(place);
+        return weightedSumNudgeL4(place);
     }
 
 
@@ -699,7 +699,7 @@ public class NeuralNetwork {
      * @param place the place of the weighted sum in layer 4
      * @return the desired nudge
      */
-    private double weightedNudgeL4(int place) {
+    private double weightedSumNudgeL4(int place) {
         // add 1 because we are using a z array in the loop we passed this from
         int neuronIndex = getNeuronIndex(4, place + 1);
 
@@ -732,6 +732,35 @@ public class NeuralNetwork {
          * The final function is sigmoid'(Z(4,d)) * 2 * (desiredActivation - actualActivation)
          */
         return NeuralMath.sigmoidDeriv(wSum) * (2 * (desiredActivation - actualActivation));
+    }
+
+
+    /**
+     * Returns the desired nudge of an activation in the final layer. Will be positive if
+     * we want the activation to increase, and negative if we want the activation to increase
+     * @param place the place of the neuron in the last layer
+     * @return the desired nudge of an activation in the final layer
+     */
+    private double activationNudgeL4(int place){
+        // the activation we wish we had on the current neuron
+        double desiredActivation = currentDesiredOutput[place];
+
+        // activation on the current neuron
+        double actualActivation = getActivation(4, place + 1);
+
+        /*
+         * Activations of the final layer can directly affect the cost function.
+         *
+         * The cost function will be minimized by getting the actual activation as
+         * close to the desired activation as possible.
+         *
+         * Since the cost function is (dA - aA)^2, the change in the cost function
+         * based on a change in activation is 2 * (da - aA).
+         *
+         * dA - aA is used over aA - dA so the result will be positive if dA > aA,
+         * and we therefore want aA to increase
+         */
+        return 2 * (desiredActivation - actualActivation);
     }
 
     /*
