@@ -16,6 +16,8 @@ public class Main {
         //setData("data/mnist_digits.csv", inputArray, outputArray);
 
         NeuralNetwork network = new NeuralNetwork(10, 40);
+
+        network.test();
     }
 
     /**

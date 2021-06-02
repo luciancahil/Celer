@@ -61,7 +61,7 @@ import main.CelerNetwork.NeuralMath.NeuralMath;
  * leaky RELU or the sigmoid of the sum of every activation value in previous layer multiplied
  * by a given weight connecting the two neurons plus a given bias.
  */
-
+//TODO test bias nudge in L4
 public class NeuralNetwork {
     // the seed used to generate the initial values in the network
     private final long seed;
@@ -218,10 +218,6 @@ public class NeuralNetwork {
         this.numWeightsTwo = numNeuronsLayer[0]  * numNeuronsLayer[1];
         this.numWeightsThree = numNeuronsLayer[1]  * numNeuronsLayer[2];
         this.numWeightsFour = numNeuronsLayer[2]  * numNeuronsLayer[3];
-
-        System.out.println(numWeightsTwo);
-        System.out.println(numWeightsThree);
-        System.out.println(numWeightsFour);
 
 
         this.numWeights = numWeightsTwo  + numWeightsThree  + numWeightsFour;
@@ -797,6 +793,19 @@ public class NeuralNetwork {
         for(int i = 1; i <= numNeuronsLayer[layer - 1]; i++){
             System.out.print(getActivation(layer, i) + " ");
         }
+    }
+
+    /**
+     * A function meant for debugging
+     */
+    public void test(){
+        double[] testOld = {3, 12, -15, 6, 4};
+        double[] testNew = {-3, 2,   2, 1, -2};
+        int count = 10;
+
+        NeuralMath.updateRollingAvgs(testOld,testNew,count);
+
+        System.out.println(count);
     }
 
     /*
