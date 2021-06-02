@@ -76,7 +76,7 @@ public class NeuralMath {
      * @param count the number of values the rolling average contains, including newVal
      * @return
      */
-    public static double updateRollingAvg(double avg, double newVal, int count) {
+    private static double updateRollingAvg(double avg, double newVal, int count) {
         if(count == 1 && avg != 0){
             throw new IllegalArgumentException("There are no previous elements, so the average should be 0");
         }
