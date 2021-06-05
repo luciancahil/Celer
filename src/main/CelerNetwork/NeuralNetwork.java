@@ -698,7 +698,7 @@ public class NeuralNetwork {
          * and we therefore want aA to increase
          */
 
-        activationNudges[index] =2 * (desiredActivation - actualActivation)
+        activationNudges[index] =2 * (desiredActivation - actualActivation);
         return activationNudges[index];
     }
 
@@ -745,7 +745,6 @@ public class NeuralNetwork {
      */
     private void calculateBiasNudgesL4(double[] biasNudge) {
         for(int i = 0; i < getNumNeuronsL4(); i++){ // there is an L4 bias for every L4 neuron
-            int neuronIndex = getNeuronIndex(4,i + 1);
             int biasIndex = getBiasIndex(4,i + 1);
 
             biasNudge[biasIndex] = getL4BiasNudge(i);
@@ -754,16 +753,14 @@ public class NeuralNetwork {
 
     private double getL4BiasNudge(int place) {
         /*
-         * The goal of the nudges is to minimize the cost function.
-         *
          * Nudging a bias in layer 4 cannot directly affect the cost function.
          *
          * Nudging a bias in layer 4 can affect the weighted sum of its corresponding neuron.
          *
-         * Due to the chain rule, dC/dB(4,d) = dz/dB(4,d) * dC/dZ(4,d)
+         * Due to the chain rule, dC/dB(4,d) = dz(4,d)/dB(4,d) * dC/dZ(4,d)
          *
          * Since we just add the bias to the weighted sum, B(4,d) and Z(4,d) have a 1-1 correspondence
-         * based on changes to the bias
+         * based on changes to the bias. In other words, dz(4,d)/dB(4,d) = 1
          *
          * Therefore, dC/dB(4,d) = dC/dZ(4,d)
          */
@@ -777,6 +774,14 @@ public class NeuralNetwork {
      * @param weightNudge: the array that stores the desired nudges
      */
     private void calculateWeightNudgesL4(double[] weightNudge) {
+        // one weight connects every weight in Layer 3 to every neuron in layer 4
+        int numWeightsL4 = numNeuronsLayer[3] * numNeuronsLayer[2];
+
+        for(int i = 0; i < numNeuronsLayer[2]; i++){ // for every neuron in layer 3
+            for(int j = 0; j < numNeuronsLayer[3]; j++){ // for every neuron in layer 4
+
+            }
+        }
     }
 
 
