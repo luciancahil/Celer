@@ -647,7 +647,7 @@ public class NeuralNetwork {
     private void calculateBiasNudges(double[] biasNudge) {
         calculateBiasNudgesL2(biasNudge);
         calculateBiasNudgesL3(biasNudge);
-        calculateBiasNudgesL4(biasNudge);
+        getBiasNudgesL4(biasNudge);
     }
 
     /**
@@ -743,7 +743,7 @@ public class NeuralNetwork {
      * Calculates how much we should nudge each bias in layer 4 according to the current dataset
      * @param biasNudge: the array that stores the desired nudges
      */
-    private void calculateBiasNudgesL4(double[] biasNudge) {
+    private void getBiasNudgesL4(double[] biasNudge) {
         for(int i = 0; i < getNumNeuronsL4(); i++){ // there is an L4 bias for every L4 neuron
             int biasIndex = getBiasIndex(4,i + 1);
 
@@ -775,15 +775,21 @@ public class NeuralNetwork {
      */
     private void calculateWeightNudgesL4(double[] weightNudge) {
         // one weight connects every weight in Layer 3 to every neuron in layer 4
-        int numWeightsL4 = numNeuronsLayer[3] * numNeuronsLayer[2];
+        int index;
 
-        for(int i = 0; i < numNeuronsLayer[2]; i++){ // for every neuron in layer 3
-            for(int j = 0; j < numNeuronsLayer[3]; j++){ // for every neuron in layer 4
-
+        for(int startPlace = 0; startPlace < numNeuronsLayer[2]; startPlace++){ // for every neuron in layer 3
+            for(int endPlace = 0; endPlace < numNeuronsLayer[3]; endPlace++){ // for every neuron in layer 4
+                index = getWeightIndex(startPlace,4,endPlace);
+                weightNudge[index] = getWeightNudgeL4(startPlace,endPlace);
             }
         }
     }
 
+    private double getWeightNudgeL4(int startPlace, int endPlace) {
+
+
+        return 0;
+    }
 
 
     /**
