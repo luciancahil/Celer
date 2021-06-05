@@ -8,6 +8,11 @@ import main.CelerNetwork.NeuralMath.NeuralMath;
 //TODO start calculating gradient
 //TODO add learning rate calculation function
 
+//lol. I thought the above would be easy:
+//TODO rearrange the order of the getNudge functions to start at L4, and descend
+//TOdO test the nudge functions for the weighted sum and Activations L4
+//TODO change the documentation in the nudge functions to use the proper notations
+
 /**
  * The Notation used in this documentation obeys the following conventions:
  * Cost: C - Refers to the output of the cost function
@@ -540,7 +545,7 @@ public class NeuralNetwork {
          * Once the learning rate becomes 1E-7, we have completed training.
          *
          */
-        
+
         // a running average of how much we should nudge the biases
         final double[] avgBiasNudge = new double[numBiases];
 
@@ -612,54 +617,67 @@ public class NeuralNetwork {
         calculateBiasNudgesL4(biasNudge);
     }
 
-
     /**
-     * Calculates how much we should nudge each bias in layer 2 according to the current dataset
-     * @param biasNudge: the array that stores the desired nudges
+     * Calcualates how much we should nudge each weight according to the current data set
+     * @param weightNudge: the array that stores the desired nudges
      */
-    private void calculateBiasNudgesL2(double[] biasNudge) {
-        for(int i = 0; i < getNumNeuronsL2(); i++){ // there is an L2 bias for every L2 neuron
-            int neuronIndex = getNeuronIndex(2,i + 1);
-            int biasIndex = getBiasIndex(2,i + 1);
-
-            biasNudge[biasIndex] = getL2BiasNudge(i);
-        }
+    private void calculateWeightNudges(double[] weightNudge) {
+        calculateWeightNudgesL2(weightNudge);
+        calculateWeightNudgesL3(weightNudge);
+        calculateWeightNudgesL4(weightNudge);
     }
 
     /**
-     * Gets the desired nudge of a bias in the second layer
-     * @param place: the placement of the bias within the second layer
-     * @return: the nudge we desire
+     * Returns the desired nudge of an activation in the final layer. Will be positive if
+     * we want the activation to increase, and negative if we want the activation to increase
+     * @param place the place of the neuron in the last layer
+     * @return the desired nudge of an activation in the final layer
      */
-    private double getL2BiasNudge(int place) {
-        if(place >= getNumNeuronsL2()){
-            throw new IllegalArgumentException("There is no neuron " + (place + 1) + " in layer 2.");
-        }
+    private double activationNudgeL4(int place){
+        // the activation we wish we had on the current neuron
+        double desiredActivation = currentDesiredOutput[place];
+
+        // activation on the current neuron
+        double actualActivation = getActivation(4, place + 1);
 
         /*
-         * The goal of the nudges is to minimize the cost function.
+         * Activations of the final layer can directly affect the cost function.
          *
-         * Nudging a bias in layer 2 cannot directly affect the cost function.
+         * The cost function will be minimized by getting the actual activation as
+         * close to the desired activation as possible.
          *
-         * Nudging a bias in layer 2 can affect the weighted sum of its corresponding neuron.
+         * Since the cost function is (dA - aA)^2, the change in the cost function
+         * based on a change in activation is 2 * (da - aA).
          *
-         * Due to the chain rule, dC/db = dz/db * dC/dz
-         *
-         * Since we just add the bias to the weighted sum, dz and db have a 1-1 correspondence
-         * based on changes to the bias
-         *
-         * Therefore, dC/db = dC/dz
+         * dA - aA is used over aA - dA so the result will be positive if dA > aA,
+         * and we therefore want aA to increase
          */
-
-        return 0;
+        return 2 * (desiredActivation - actualActivation);
     }
 
-
     /**
-     * Calculates how much we should nudge each bias in layer 3 according to the current dataset
-     * @param biasNudge: the array that stores the desired nudges
+     * Returns the desired nudge on a given weighted sum in L4
+     * @param place the place of the weighted sum in layer 4
+     * @return the desired nudge
      */
-    private void calculateBiasNudgesL3(double[] biasNudge) {
+    private double weightedSumNudgeL4(int place) {
+        // add 1 because we are using a zero array in the loop we passed this from
+        int neuronIndex = getNeuronIndex(4, place + 1);
+
+        // weighted sum of the neuron we are observing
+        double wSum = neuronWeightedSums[neuronIndex];
+
+        /*
+         * Nudging a weighed sum on Layer 4 cannot directly affect the cost function
+         *
+         * Nudging a weighted sum can directly affect the activation of a last layer neuron.
+         *
+         * The ratio in the change between the change in a last layer activation and a last
+         * layer weighted sum is equal to the derivative of the sigmoid function at the
+         * value of the current weighed sum. Therefore, we will multiply the desired
+         * activation nudge by that value.
+         */
+        return NeuralMath.sigmoidDeriv(wSum) * activationNudgeL4(place);
     }
 
     /**
@@ -695,32 +713,6 @@ public class NeuralNetwork {
     }
 
 
-
-
-    /**
-     * Calcualates how much we should nudge each weight according to the current data set
-     * @param weightNudge: the array that stores the desired nudges
-     */
-    private void calculateWeightNudges(double[] weightNudge) {
-        calculateWeightNudgesL2(weightNudge);
-        calculateWeightNudgesL3(weightNudge);
-        calculateWeightNudgesL4(weightNudge);
-    }
-
-    /**
-     * Calcualates how much we should nudge each weight pointing to layer 2 according to the current data set
-     * @param weightNudge: the array that stores the desired nudges
-     */
-    private void calculateWeightNudgesL2(double[] weightNudge) {
-    }
-
-    /**
-     * Calcualates how much we should nudge each weight pointing to layer 3 according to the current data set
-     * @param weightNudge: the array that stores the desired nudges
-     */
-    private void calculateWeightNudgesL3(double[] weightNudge) {
-    }
-
     /**
      * Calcualates how much we should nudge each weight pointing to  layer 4 according to the current data set
      * @param weightNudge: the array that stores the desired nudges
@@ -729,61 +721,77 @@ public class NeuralNetwork {
     }
 
 
-    /**
-     * Returns the desired nudge on a given weighted sum in L4
-     * @param place the place of the weighted sum in layer 4
-     * @return the desired nudge
-     */
-    private double weightedSumNudgeL4(int place) {
-        // add 1 because we are using a zero array in the loop we passed this from
-        int neuronIndex = getNeuronIndex(4, place + 1);
 
-        // weighted sum of the neuron we are observing
-        double wSum = neuronWeightedSums[neuronIndex];
+    /**
+     * Calculates how much we should nudge each bias in layer 3 according to the current dataset
+     * @param biasNudge: the array that stores the desired nudges
+     */
+    private void calculateBiasNudgesL3(double[] biasNudge) {
+    }
+
+
+
+
+    /**
+     * Calcualates how much we should nudge each weight pointing to layer 3 according to the current data set
+     * @param weightNudge: the array that stores the desired nudges
+     */
+    private void calculateWeightNudgesL3(double[] weightNudge) {
+    }
+
+
+
+    /**
+     * Calculates how much we should nudge each bias in layer 2 according to the current dataset
+     * @param biasNudge: the array that stores the desired nudges
+     */
+    private void calculateBiasNudgesL2(double[] biasNudge) {
+        for(int i = 0; i < getNumNeuronsL2(); i++){ // there is an L2 bias for every L2 neuron
+            int neuronIndex = getNeuronIndex(2,i + 1);
+            int biasIndex = getBiasIndex(2,i + 1);
+
+            biasNudge[biasIndex] = getL2BiasNudge(i);
+        }
+    }
+
+
+
+    /**
+     * Gets the desired nudge of a bias in the second layer
+     * @param place: the placement of the bias within the second layer
+     * @return: the nudge we desire
+     */
+    private double getL2BiasNudge(int place) {
+        if(place >= getNumNeuronsL2()){
+            throw new IllegalArgumentException("There is no neuron " + (place + 1) + " in layer 2.");
+        }
 
         /*
          * The goal of the nudges is to minimize the cost function.
          *
-         * Nudging a weighed sum on Layer 4 cannot directly affect the cost function
+         * Nudging a bias in layer 2 cannot directly affect the cost function.
          *
-         * Nudging a weighted sum can directly affect the activation of a last layer neuron.
+         * Nudging a bias in layer 2 can affect the weighted sum of its corresponding neuron.
          *
-         * The ratio in the change between the change in a last layer activation and a last
-         * layer weighted sum is equal to the derivative of the sigmoid function at the
-         * value of the current weighed sum. Therefore, we will multiply the desired
-         * activation nudge by that value.
+         * Due to the chain rule, dC/db(4,n) = dz(4.n)/db(4.n) * dC/dz(4,n)
+         *
+         * Since we just add the bias to the weighted sum, dz and db have a 1-1 correspondence
+         * based on changes to the bias
+         *
+         * Therefore, dC/db(4,n) = dC/dz4,n)
          */
-        return NeuralMath.sigmoidDeriv(wSum) * activationNudgeL4(place);
+
+        return 0;
     }
 
 
     /**
-     * Returns the desired nudge of an activation in the final layer. Will be positive if
-     * we want the activation to increase, and negative if we want the activation to increase
-     * @param place the place of the neuron in the last layer
-     * @return the desired nudge of an activation in the final layer
+     * Calcualates how much we should nudge each weight pointing to layer 2 according to the current data set
+     * @param weightNudge: the array that stores the desired nudges
      */
-    private double activationNudgeL4(int place){
-        // the activation we wish we had on the current neuron
-        double desiredActivation = currentDesiredOutput[place];
-
-        // activation on the current neuron
-        double actualActivation = getActivation(4, place + 1);
-
-        /*
-         * Activations of the final layer can directly affect the cost function.
-         *
-         * The cost function will be minimized by getting the actual activation as
-         * close to the desired activation as possible.
-         *
-         * Since the cost function is (dA - aA)^2, the change in the cost function
-         * based on a change in activation is 2 * (da - aA).
-         *
-         * dA - aA is used over aA - dA so the result will be positive if dA > aA,
-         * and we therefore want aA to increase
-         */
-        return 2 * (desiredActivation - actualActivation);
+    private void calculateWeightNudgesL2(double[] weightNudge) {
     }
+
 
     /*
      * Print functions meant to aid in debugging
