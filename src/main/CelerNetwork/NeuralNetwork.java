@@ -831,18 +831,16 @@ public class NeuralNetwork {
         }
 
         /*
-         * The goal of the nudges is to minimize the cost function.
-         *
          * Nudging a bias in layer 2 cannot directly affect the cost function.
          *
          * Nudging a bias in layer 2 can affect the weighted sum of its corresponding neuron.
          *
-         * Due to the chain rule, dC/db(4,n) = dz(4.n)/db(4.n) * dC/dz(4,n)
+         * Due to the chain rule, dC/db(2,n) = dz(2,n)/db(2,n) * dC/dz(2,n)
          *
          * Since we just add the bias to the weighted sum, dz and db have a 1-1 correspondence
-         * based on changes to the bias
+         * based on changes to the bias. Therefore, dz(2,n)/db(2,n) = 1
          *
-         * Therefore, dC/db(4,n) = dC/dz4,n)
+         * Therefore, dC/db(2,n) = dC/dz(2,n)
          */
 
         return 0;
