@@ -34,6 +34,7 @@ public class Main {
         NeuralNetwork network = new NeuralNetwork(inputSize, outputSize,5361463625739800576l);
 
         network.setData(inputArray,outputArray);
+        network.test();
     }
 
     /**

@@ -9,7 +9,6 @@ import main.CelerNetwork.NeuralMath.NeuralMath;
 //TODO add learning rate calculation function
 
 //lol. I thought the above would be easy:
-//TODO rearrange the order of the getNudge functions to start at L4, and descend
 //TOdO test the nudge functions for the weighted sum and Activations L4
 //TODO change the documentation in the nudge functions to use the proper notations
 
@@ -420,7 +419,7 @@ public class NeuralNetwork {
         double cost = 0;
 
         // run the neural network with current parameters
-        runExample(input);
+        runExample(input, target);
 
         // cycle through each neuron in the output layer, and check it against the target
         for(int i = 1; i <= numNeuronsLayer[NUM_LAYERS - 1]; i++){
@@ -439,11 +438,14 @@ public class NeuralNetwork {
      * @param input: The array that will supply information to the input layer.
      * @throws IllegalArgumentException if the input array does not have the same number of entries as the input layer
      */
-    public void runExample(double[] input) throws IllegalArgumentException{
+    public void runExample(double[] input, double[] output) throws IllegalArgumentException{
 
 
 
         validateInput(input);
+        validateOutput(output);
+
+        this.currentDesiredOutput = output;
 
 
         // Fills the input layer of the neural network with data from the input array
@@ -590,8 +592,7 @@ public class NeuralNetwork {
                 // runs the network with the proper data as input
                 int dataIndex = j + batchSize * i;
 
-                runExample(trainingDataInput[dataIndex]);
-                currentDesiredOutput = trainingDataOutput[dataIndex];
+                runExample(trainingDataInput[dataIndex], trainingDataOutput[dataIndex]);
 
                 // set proper values for biasNudge
                 calculateBiasNudges(biasNudge);
@@ -861,13 +862,14 @@ public class NeuralNetwork {
      * A function meant for debugging
      */
     public void test(){
-        double[] testOld = {3, 12, -15, 6, 4};
-        double[] testNew = {-3, 2,   2, 1, -2};
-        int count = 10;
+        int outputSize = numNeuronsLayer[3];
 
-        NeuralMath.updateRollingAvgs(testOld,testNew,count);
+        runExample(trainingDataInput[0], trainingDataOutput[0]);
 
-        System.out.println(count);
+        for(int i = 0; i < outputSize; i++){
+            System.out.println(activationNudgeL4(i));
+            System.out.println(weightedSumNudgeL4(i));
+        }
     }
 
     /*
