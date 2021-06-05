@@ -48,6 +48,10 @@ public class NeuralMath {
     public static double sigmoidDeriv(double input){
         double exp = Math.exp(input);
 
+        if(Double.isInfinite(exp)){
+            return 0;
+        }
+
         return exp / Math.pow(1 + exp, 2);
     }
 

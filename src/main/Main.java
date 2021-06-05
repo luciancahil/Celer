@@ -23,8 +23,8 @@ public class Main {
 
         for(int i = 0; i <numSamples; i ++){
             for(int j = 0; j < inputSize; j++){
-                inputArray[i][j] = valuesGen.nextDouble() * 10;
-                outputArray[i][j] = valuesGen.nextDouble() * 10;
+                inputArray[i][j] = (valuesGen.nextDouble() * 10) % 10;
+                outputArray[i][j] = NeuralMath.sigmoid(valuesGen.nextDouble() * 10) ;
             }
         }
 

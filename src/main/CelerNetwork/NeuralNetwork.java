@@ -238,11 +238,11 @@ public class NeuralNetwork {
         Random rand = new Random(seed);
 
         for(int i = 0; i < numWeights; i++){
-            weights[i] = rand.nextDouble() * 20 - 10;
+            weights[i] = rand.nextDouble() * 2 - 1;
         }
 
         for(int i = 0; i < numBiases; i++){
-            biases[i] = rand.nextDouble() * 20 - 10;
+            biases[i] = rand.nextDouble() * 2 - 1;
         }
     }
 
@@ -856,6 +856,7 @@ public class NeuralNetwork {
         for(int i = 1; i <= numNeuronsLayer[layer - 1]; i++){
             System.out.print(getActivation(layer, i) + " ");
         }
+        System.out.println();
     }
 
     /**
@@ -866,9 +867,16 @@ public class NeuralNetwork {
 
         runExample(trainingDataInput[0], trainingDataOutput[0]);
 
+        System.out.println(currentDesiredOutput[0]);
+        System.out.println(currentDesiredOutput[1]);
+        System.out.println(currentDesiredOutput[2]);
+
+        System.out.println();
+        System.out.println();
+
         for(int i = 0; i < outputSize; i++){
-            System.out.println(activationNudgeL4(i));
-            System.out.println(weightedSumNudgeL4(i));
+            System.out.println("Activation " + i + ": " + activationNudgeL4(i));
+            System.out.println("WS " + i + ": " + weightedSumNudgeL4(i));
         }
     }
 
