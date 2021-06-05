@@ -70,7 +70,11 @@ public class NeuralNetwork {
     // the seed used to generate the initial values in the network
     private final long seed;
 
+    // number of layers
     private final static int NUM_LAYERS = 4;
+
+    // the starting value for the activation and weighted sum nudge arrays
+    private final static double DEFAULT_NUDGE = -Math.PI;
 
     // the array that stores the number of neurons in each layer. numNeuronsLayer[0] stores the
     // number of neurons in the first layer
@@ -163,6 +167,12 @@ public class NeuralNetwork {
     // the output we are currently aiming for in a given round of training
     private double[] currentDesiredOutput;
 
+    // an array to store the desired nudges of activations during a training session.
+    private final double[] activationNudges;
+
+    // an array to store the desired nudges of activations during a training session.
+    private final double[] weightedSumNudges;
+
 
     /**
      * Function: Construction of a brand new neural Network with a randomly generated seed
@@ -213,6 +223,8 @@ public class NeuralNetwork {
 
         this.numNeurons = numNeuronsLayer[0] + numNeuronsLayer[1] + numNeuronsLayer[2] + numNeuronsLayer[3];
         this.neuronWeightedSums = new double[numNeurons];
+        this.activationNudges = new double[numNeurons];
+        this.weightedSumNudges = new double[numNeurons];
 
         /* there is a bias for every neuron not in the first layer */
         this.numBiases = numNeurons - numNeuronsLayer[0];
@@ -585,6 +597,8 @@ public class NeuralNetwork {
         for(int i = 0; i < numBatches; i++){
             // setting cur batch size
 
+            resetNudgeArrays();
+
             if(i < numBatches - 1){
                 // not the final batch
                 curBatchSize = batchSize;
@@ -613,6 +627,16 @@ public class NeuralNetwork {
                 NeuralMath.updateRollingAvgs(avgWeightNudge,weightNudge,j);
             }
 
+        }
+    }
+
+    /**
+     * Sets every value in the arrays to be the default value
+     */
+    private void resetNudgeArrays() {
+        for(int i = 0; i < NUM_LAYERS; i++){
+            activationNudges[i] = DEFAULT_NUDGE;
+            weightedSumNudges[i] = DEFAULT_NUDGE;
         }
     }
 
@@ -649,6 +673,18 @@ public class NeuralNetwork {
         // activation on the current neuron
         double actualActivation = getActivation(4, place + 1);
 
+        // index of the neuron in the neuron array
+        int index = getNeuronIndex(4, place + 1);
+
+        // value already stored in the activation Nudges array
+        double preValue = activationNudges[index];
+
+        if(preValue != DEFAULT_NUDGE){
+            // the only way we are NOT at the default alue is we already calculated the necessary nudge.
+            // just return that
+            return preValue;
+        }
+
         /*
          * Activations of the final layer can directly affect the cost function.
          *
@@ -661,7 +697,9 @@ public class NeuralNetwork {
          * dA - aA is used over aA - dA so the result will be positive if dA > aA,
          * and we therefore want aA to increase
          */
-        return 2 * (desiredActivation - actualActivation);
+
+        activationNudges[index] =2 * (desiredActivation - actualActivation)
+        return activationNudges[index];
     }
 
     /**
@@ -676,6 +714,16 @@ public class NeuralNetwork {
         // weighted sum of the neuron we are observing
         double wSum = neuronWeightedSums[neuronIndex];
 
+        // index of the neuron in the neuron array
+        int index = getNeuronIndex(4, place + 1);
+        double preValue = weightedSumNudges[index];
+
+        if(preValue != DEFAULT_NUDGE){
+            // the only way we are NOT at the default alue is we already calculated the necessary nudge.
+            // just return that
+            return preValue;
+        }
+
         /*
          * Nudging a weighed sum on Layer 4 cannot directly affect the cost function
          *
@@ -686,7 +734,9 @@ public class NeuralNetwork {
          * value of the current weighed sum. Therefore, we will multiply the desired
          * activation nudge by that value.
          */
-        return NeuralMath.sigmoidDeriv(wSum) * activationNudgeL4(place);
+
+        weightedSumNudges[index] = NeuralMath.sigmoidDeriv(wSum) * activationNudgeL4(place);
+        return weightedSumNudges[index];
     }
 
     /**
@@ -853,6 +903,12 @@ public class NeuralNetwork {
         }
     }
 
+    public void printAllActivation(){
+        for(int i = 1; i <= NUM_LAYERS; i++){
+            printActivation(i);
+        }
+    }
+
     /**
      * Prints all the activations (not weighted sums) of a layer
      * @param layer the layer whose activations we will print
@@ -875,14 +931,13 @@ public class NeuralNetwork {
 
         runExample(trainingDataInput[0], trainingDataOutput[0]);
 
-        System.out.println(currentDesiredOutput[0]);
-        System.out.println(currentDesiredOutput[1]);
-        System.out.println(currentDesiredOutput[2]);
+        printAllActivation();
 
         System.out.println();
         System.out.println();
 
         for(int i = 0; i < outputSize; i++){
+           // System.out.println(neuronWeightedSums[getNeuronIndex(4,i + 1)]);
             System.out.println("Activation " + i + ": " + activationNudgeL4(i));
             System.out.println("WS " + i + ": " + weightedSumNudgeL4(i));
         }
