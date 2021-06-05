@@ -236,13 +236,21 @@ public class NeuralNetwork {
      */
     private void generateWeights(){
         Random rand = new Random(seed);
+        int largestLayer;
+
+        if(numNeuronsLayer[0] > numNeuronsLayer[3]){
+            // the first layer has as many or more neurons than the last
+            largestLayer = numNeuronsLayer[0];
+        }else{
+            largestLayer = numNeuronsLayer[3];
+        }
 
         for(int i = 0; i < numWeights; i++){
-            weights[i] = rand.nextDouble() * 2 - 1;
+            weights[i] = rand.nextDouble() * 2.0/largestLayer - 1.0/largestLayer;
         }
 
         for(int i = 0; i < numBiases; i++){
-            biases[i] = rand.nextDouble() * 2 - 1;
+            biases[i] = rand.nextDouble() * 20 - 10;
         }
     }
 
