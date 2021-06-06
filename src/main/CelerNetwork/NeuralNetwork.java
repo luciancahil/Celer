@@ -634,7 +634,7 @@ public class NeuralNetwork {
      * Sets every value in the arrays to be the default value
      */
     private void resetNudgeArrays() {
-        for(int i = 0; i < NUM_LAYERS; i++){
+        for(int i = 0; i < numNeurons; i++){
             activationNudges[i] = DEFAULT_NUDGE;
             weightedSumNudges[i] = DEFAULT_NUDGE;
         }
@@ -666,7 +666,7 @@ public class NeuralNetwork {
      * @param place the place of the neuron in the last layer
      * @return the desired nudge of an activation in the final layer
      */
-    private double activationNudgeL4(int place){
+    private double getActivationNudgeL4(int place){
         // the activation we wish we had on the current neuron
         double desiredActivation = currentDesiredOutput[place];
 
@@ -707,7 +707,7 @@ public class NeuralNetwork {
      * @param place the place of the weighted sum in layer 4
      * @return the desired nudge
      */
-    private double weightedSumNudgeL4(int place) {
+    private double getWeightedSumNudgeL4(int place) {
         // add 1 because we are using a zero array in the loop we passed this from
         int neuronIndex = getNeuronIndex(4, place + 1);
 
@@ -735,7 +735,7 @@ public class NeuralNetwork {
          * activation nudge by that value.
          */
 
-        weightedSumNudges[index] = NeuralMath.sigmoidDeriv(wSum) * activationNudgeL4(place);
+        weightedSumNudges[index] = NeuralMath.sigmoidDeriv(wSum) * getActivationNudgeL4(place);
         return weightedSumNudges[index];
     }
 
@@ -765,7 +765,7 @@ public class NeuralNetwork {
          * Therefore, dC/dB(4,d) = dC/dZ(4,d)
          */
 
-        return weightedSumNudgeL4(place);
+        return getWeightedSumNudgeL4(place);
     }
 
 
@@ -779,16 +779,30 @@ public class NeuralNetwork {
 
         for(int startPlace = 0; startPlace < numNeuronsLayer[2]; startPlace++){ // for every neuron in layer 3
             for(int endPlace = 0; endPlace < numNeuronsLayer[3]; endPlace++){ // for every neuron in layer 4
-                index = getWeightIndex(startPlace,4,endPlace);
+                // add 1, because the for loop starts at 0
+                index = getWeightIndex(startPlace + 1,4,endPlace + 1);
                 weightNudge[index] = getWeightNudgeL4(startPlace,endPlace);
             }
         }
     }
 
     private double getWeightNudgeL4(int startPlace, int endPlace) {
-
-
-        return 0;
+        /*
+         * Nudging a weight pointing to layer 4 cannot directly affect the cost function.
+         *
+         * Nudging a weight pointing to layer 4 can affect the weighted sum of its
+         * corresponding neuron.
+         *
+         * Due to the chain rule, dC/dW(c,4,d) = dz(4,d)/dW(c,4,d) * dC/dZ(4,d)
+         *
+         * The effect of W(c,4,d) is equal to the product of W(c,4,d) and A(3,c). Therefor,
+         * the effect of changing W(c,4,d) is exactly proportional to A(3,c).
+         *
+         * Therefore, dC/dB(4,d) = A(3,c)
+         */
+        double part1 = getActivation(3, startPlace + 1);
+        double part2 = getWeightedSumNudgeL4(endPlace);
+        return part1 * part2;
     }
 
 
@@ -936,19 +950,21 @@ public class NeuralNetwork {
      * A function meant for debugging
      */
     public void test(){
-        int outputSize = numNeuronsLayer[3];
+        runExample(trainingDataInput[0],trainingDataOutput[0]);
+        resetNudgeArrays();
 
-        runExample(trainingDataInput[0], trainingDataOutput[0]);
+        double[] weightTest = new double[numWeights];
 
-        printAllActivation();
+        calculateWeightNudgesL4(weightTest);
 
-        System.out.println();
-        System.out.println();
+        for(int start = 0; start < numNeuronsLayer[2]; start++){
+            for(int end = 0; end < numNeuronsLayer[3]; end++){
+                int index = getWeightIndex(start + 1, 4, end + 1);
+                double value = weightTest[index];
+                System.out.println(value + ", ");
+            }
 
-        for(int i = 0; i < outputSize; i++){
-           // System.out.println(neuronWeightedSums[getNeuronIndex(4,i + 1)]);
-            System.out.println("Activation " + i + ": " + activationNudgeL4(i));
-            System.out.println("WS " + i + ": " + weightedSumNudgeL4(i));
+            System.out.println();
         }
     }
 
