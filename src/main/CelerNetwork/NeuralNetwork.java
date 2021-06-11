@@ -846,8 +846,8 @@ public class NeuralNetwork {
          * dC/dA(3,c) = Σ(W(c,4,d) * dC/dZ(4,d))
          */
 
-        for(int i = 1; i <= numNeuronsLayer[3]; i++){
-            double curChange = weights[getWeightIndex((place + 1), 4, i)];
+        for(int i = 0; i < numNeuronsLayer[3]; i++){
+            double curChange = weights[getWeightIndex((place + 1), 4, i)] * getWeightedSumNudgeL3(i);
 
             totalNudges += curChange;
         }
@@ -889,21 +889,144 @@ public class NeuralNetwork {
 
     /**
      * Calculates how much we should nudge each bias in layer 3 according to the current dataset
-     * @param biasNudge: the array that stores the desired nudges
+     * @param biasNudges: the array that stores the desired nudges
      */
-    private void calculateBiasNudgesL3(double[] biasNudge) {
+    private void calculateBiasNudgesL3(double[] biasNudges) {
+        for(int i = 0; i < numNeuronsLayer[2]; i++){
+            int index = getBiasIndex(3, i + 1);
+
+            biasNudges[index] = getBiasNudgeL3(i);
+        }
     }
 
+    /**
+     * returns the desired nudge of a bias in layer 3
+     * @param place the place of the neuron in layer 3 minus 1 (first one will be place = 0)
+     * @return the desired nudge of a bias in layer 3
+     */
+    private double getBiasNudgeL3(int place) {
+        /*
+        It's just the nudge of the weighted sum of the neuron this bias is attached to
+         */
 
-
+        return getWeightedSumNudgeL3(place);
+    }
 
     /**
-     * Calcualates how much we should nudge each weight pointing to layer 3 according to the current data set
+     * Calcualates how much we should nudge each weight pointing to  layer 4 according to the current data set
      * @param weightNudge: the array that stores the desired nudges
      */
     private void calculateWeightNudgesL3(double[] weightNudge) {
+        // one weight connects every weight in Layer 3 to every neuron in layer 4
+        int index;
+
+        for(int startPlace = 0; startPlace < numNeuronsLayer[1]; startPlace++){ // for every neuron in layer 3
+            for(int endPlace = 0; endPlace < numNeuronsLayer[2]; endPlace++){ // for every neuron in layer 4
+                // add 1, because the for loop starts at 0
+                index = getWeightIndex(startPlace + 1,3,endPlace + 1);
+                weightNudge[index] = getWeightNudgeL3(startPlace,endPlace);
+            }
+        }
     }
 
+    private double getWeightNudgeL3(int startPlace, int endPlace) {
+        /*
+         * Nudging a weight pointing to layer 4 cannot directly affect the cost function.
+         *
+         * Nudging a weight pointing to layer 4 can affect the weighted sum of its
+         * corresponding neuron.
+         *
+         * Due to the chain rule, dC/dW(b,3,c) = dz(3,c)/dW(b,3,c) * dC/dZ(3,c)
+         *
+         * The effect of dW(b,3,c) on dZ(3,c) is equal to the product of dW(b,3,c) and A(2,b).
+         * Therefore,the effect of changing dW(b,3,c) is exactly proportional to A(2,b).
+         *
+         * Therefore, dz(3,c)/dW(b,3,c) = A(2,b)
+         */
+        double n1Activation = getActivation(2, startPlace + 1);
+        double n2weightedSumNudge = getWeightedSumNudgeL3(endPlace);
+        return n1Activation * n2weightedSumNudge;
+    }
+
+    /**
+     * Returns the desired nudge of the activation of a neuron in Layer 3
+     * @param place the place of the neuron in the layer -1 (first one will have 0)
+     * @return the desired nudge of an activation
+     */
+    private double getActivationNudgeL2(int place){
+        // the desired nudges summed up over all neurons in the 4th layer
+        double totalNudges = 0;
+
+        // neuron
+        int index = getNeuronIndex(3, place + 1);
+
+        // value already stored in the activation Nudges array
+        double preValue = activationNudges[index];
+
+        if(preValue != DEFAULT_NUDGE){
+            // the only way we are NOT at the default alue is we already calculated the necessary nudge.
+            // just return that
+            return preValue;
+        }
+
+
+        /*
+         * Changing the activation of a neuron in layer 3 cannot directly affect the cost function.
+         *
+         * However, it can directly affect the weighted sum of every neurons in layer 4.
+         *
+         * Due to the chain rule, dC/dA(3,c) = Σ(dC/dZ(4,d) * dZ(4,d)/dA(3,c))
+         *
+         * We will need to take into account how nudging the activation in l3 will affect the
+         * cost function through EVERY weighted sum in L4. If all of them want A(3,c) to increase,
+         * then this value wants to strongly increase. If it's about half, this value will want
+         * no particular change. Therefore, we simply add up the desired changes raw.
+         *
+         * For one instance of dZ(4,d) / dA(3,c), the change is proportionate to the weight
+         * connecting neuron (3,c) to neuron (4,d). Therefore, dZ(4,d) / dA(3,c) = W(c,4,d).
+         *
+         * dC/dA(3,c) = Σ(W(c,4,d) * dC/dZ(4,d))
+         */
+
+        for(int i = 0; i <= numNeuronsLayer[1]; i++){
+            double curChange = weights[getWeightIndex((place + 1), 3, i)] * getweightedSumNudgeL3(i);
+
+            totalNudges += curChange;
+        }
+
+        return totalNudges;
+    }
+
+    private double getweightedSumNudgeL3(int place) {
+        // add 1 because we are using a zero array in the loop we passed this from
+        int neuronIndex = getNeuronIndex(4, place + 1);
+
+        // weighted sum of the neuron we are observing
+        double wSum = neuronWeightedSums[neuronIndex];
+
+        // value already calculated
+        double preValue = weightedSumNudges[neuronIndex];
+
+        if(preValue != DEFAULT_NUDGE){
+            // the only way we are NOT at the default value is we already calculated the necessary nudge.
+            // just return that
+            return preValue;
+        }
+
+        /*
+         * Nudging a weighed sum on Layer 3 cannot directly affect the cost function
+         *
+         * Nudging a weighted sum can directly affect the activation of a layer 3 neuron.
+         *
+         * The ratio in the change between the change in a last layer activation and a last
+         * layer weighted sum is equal to the derivative of the RELU function at the
+         * value of the current weighed sum. Therefore, we will multiply the desired
+         * activation nudge by said derivative
+         */
+
+        weightedSumNudges[neuronIndex] = NeuralMath.reluDeriv(wSum) * getActivationNudgeL3(place);
+        return weightedSumNudges[neuronIndex];
+    }
 
 
     /**
