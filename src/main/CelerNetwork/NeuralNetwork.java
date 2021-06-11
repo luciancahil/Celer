@@ -812,7 +812,10 @@ public class NeuralNetwork {
      * @return the desired nudge of an activation
      */
     private double getActivationNudgeL3(int place){
+        // the desired nudges summed up over all neurons in the 4th layer
         double totalNudges = 0;
+
+
         /*
          * Changing the activation of a neuron in layer 3 cannot directly affect the cost function.
          *
@@ -838,6 +841,37 @@ public class NeuralNetwork {
         }
 
         return totalNudges;
+    }
+
+    private double getWeightedSumNudgeL3(int place) {
+        // add 1 because we are using a zero array in the loop we passed this from
+        int neuronIndex = getNeuronIndex(4, place + 1);
+
+        // weighted sum of the neuron we are observing
+        double wSum = neuronWeightedSums[neuronIndex];
+
+        // value already calculated
+        double preValue = weightedSumNudges[neuronIndex];
+
+        if(preValue != DEFAULT_NUDGE){
+            // the only way we are NOT at the default value is we already calculated the necessary nudge.
+            // just return that
+            return preValue;
+        }
+
+        /*
+         * Nudging a weighed sum on Layer 3 cannot directly affect the cost function
+         *
+         * Nudging a weighted sum can directly affect the activation of a layer 3 neuron.
+         *
+         * The ratio in the change between the change in a last layer activation and a last
+         * layer weighted sum is equal to the derivative of the RELU function at the
+         * value of the current weighed sum. Therefore, we will multiply the desired
+         * activation nudge by said derivative
+         */
+
+        weightedSumNudges[neuronIndex] = NeuralMath.reluDeriv(wSum) * getActivationNudgeL4(place);
+        return weightedSumNudges[neuronIndex];
     }
 
 
