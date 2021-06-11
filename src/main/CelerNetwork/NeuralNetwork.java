@@ -9,16 +9,17 @@ import main.CelerNetwork.NeuralMath.NeuralMath;
 //TODO add learning rate calculation function
 
 //lol. I thought the above would be easy:
-//TOdO test the nudge functions for the weighted sum and Activations L4
 //TODO change the documentation in the nudge functions to use the proper notations
+//TODO change the documentation in the getIndex functions to use proper notations
+//TODO explain what the cost function is and that we want to reduce it
 
 /**
  * The Notation used in this documentation obeys the following conventions:
  * Cost: C - Refers to the output of the cost function
  * Neuron: N(a, b) - Refers to the bth neuron in the ath layer
  * Bias: B(a, b) -  Refers to the bias of the  bth neuron in the ath layer
- * Weight: W(a, b, c) - Refers to the weight that connects the bth neuron
- *  in the (a - 1)th layer to the cth neuron in the ath layer.
+ * Weight: W(a, b, c) - Refers to the weight that connects the ath neuron
+ *  in the (b - 1)th layer to the cth neuron in the bth layer.
  * Weighted Sum: Z(a, b): Refers to the weighted sum of the bth neuron in the
  *  ath layer
  *  dx/dy: the change in x (cost function, activation, etc) due to y (cost, weight, bias, etc)
@@ -800,9 +801,43 @@ public class NeuralNetwork {
          *
          * Therefore, dC/dB(4,d) = A(3,c)
          */
-        double part1 = getActivation(3, startPlace + 1);
-        double part2 = getWeightedSumNudgeL4(endPlace);
-        return part1 * part2;
+        double n1Activation = getActivation(3, startPlace + 1);
+        double n2weightedSumNudge = getWeightedSumNudgeL4(endPlace);
+        return n1Activation * n2weightedSumNudge;
+    }
+
+    /**
+     * Returns the desired nudge of the activation of a neuron in Layer 3
+     * @param place the place of the neuron in the layer -1 (first one will have 0)
+     * @return the desired nudge of an activation
+     */
+    private double getActivationNudgeL3(int place){
+        double totalNudges = 0;
+        /*
+         * Changing the activation of a neuron in layer 3 cannot directly affect the cost function.
+         *
+         * However, it can directly affect the weighted sum of every neurons in layer 4.
+         *
+         * Due to the chain rule, dC/dA(3,c) = Σ(dC/dZ(4,d) * dZ(4,d)/dA(3,c))
+         *
+         * We will need to take into account how nudging the activation in l3 will affect the
+         * cost function through EVERY weighted sum in L4. If all of them want A(3,c) to increase,
+         * then this value wants to strongly increase. If it's about half, this value will want
+         * no particular change. Therefore, we simply add up the desired changes raw.
+         *
+         * For one instance of dZ(4,d) / dA(3,c), the change is proportionate to the weight
+         * connecting neuron (3,c) to neuron (4,d). Therefore, dZ(4,d) / dA(3,c) = W(c,4,d).
+         *
+         * dC/dA(3,c) = Σ(W(c,4,d) * dC/dZ(4,d))
+         */
+
+        for(int i = 1; i <= numNeuronsLayer[3]; i++){
+            double curChange = weights[getWeightIndex((place + 1), 4, i)];
+
+            totalNudges += curChange;
+        }
+
+        return totalNudges;
     }
 
 
@@ -964,6 +999,14 @@ public class NeuralNetwork {
             System.out.println(currentDesiredOutput[i]);
         }
 
+        for(int i = 2; i <= 4; i++){
+            for(int j = 1; j <= 3; j++){
+                for(int k = 1; k <=3; k++){
+                    System.out.println("From Neuron " + j + " in layer " + (i - 1) + " to neuron " + k + " in layer " + i + ": " + weights[getWeightIndex(j,i,k)]);
+                }
+            }
+        }
+        /*
         for(int start = 0; start < numNeuronsLayer[2]; start++){
             for(int end = 0; end < numNeuronsLayer[3]; end++){
                 int index = getWeightIndex(start + 1, 4, end + 1);
@@ -977,7 +1020,7 @@ public class NeuralNetwork {
         for(int i = 0; i < numNeuronsLayer[3]; i++){
             System.out.println(getWeightedSumNudgeL4(i)
             );
-        }
+        }*/
     }
 
     /*
