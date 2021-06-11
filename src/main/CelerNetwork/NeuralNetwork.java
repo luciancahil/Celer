@@ -9,6 +9,7 @@ import main.CelerNetwork.NeuralMath.NeuralMath;
 //TODO add learning rate calculation function
 
 //lol. I thought the above would be easy:
+//TODO test and change documentation in L3 and L2 nudge functions
 //TODO change the documentation in the nudge functions to use the proper notations
 //TODO change the documentation in the getIndex functions to use proper notations
 //TODO explain what the cost function is and that we want to reduce it
@@ -949,7 +950,7 @@ public class NeuralNetwork {
     }
 
     /**
-     * Returns the desired nudge of the activation of a neuron in Layer 3
+     * Returns the desired nudge of the activation of a neuron in Layer 2
      * @param place the place of the neuron in the layer -1 (first one will have 0)
      * @return the desired nudge of an activation
      */
@@ -958,7 +959,7 @@ public class NeuralNetwork {
         double totalNudges = 0;
 
         // neuron
-        int index = getNeuronIndex(3, place + 1);
+        int index = getNeuronIndex(2, place + 1);
 
         // value already stored in the activation Nudges array
         double preValue = activationNudges[index];
@@ -989,7 +990,7 @@ public class NeuralNetwork {
          */
 
         for(int i = 0; i <= numNeuronsLayer[1]; i++){
-            double curChange = weights[getWeightIndex((place + 1), 3, i)] * getweightedSumNudgeL3(i);
+            double curChange = weights[getWeightIndex((place + 1), 3, i)] * getWeightedSumNudgeL3(i);
 
             totalNudges += curChange;
         }
@@ -997,7 +998,7 @@ public class NeuralNetwork {
         return totalNudges;
     }
 
-    private double getweightedSumNudgeL3(int place) {
+    private double getWeightedSumNudgeL2(int place) {
         // add 1 because we are using a zero array in the loop we passed this from
         int neuronIndex = getNeuronIndex(4, place + 1);
 
@@ -1024,58 +1025,69 @@ public class NeuralNetwork {
          * activation nudge by said derivative
          */
 
-        weightedSumNudges[neuronIndex] = NeuralMath.reluDeriv(wSum) * getActivationNudgeL3(place);
+        weightedSumNudges[neuronIndex] = NeuralMath.reluDeriv(wSum) * getActivationNudgeL2(place);
         return weightedSumNudges[neuronIndex];
     }
 
-
     /**
-     * Calculates how much we should nudge each bias in layer 2 according to the current dataset
-     * @param biasNudge: the array that stores the desired nudges
+     * Calculates how much we should nudge each bias in layer 3 according to the current dataset
+     * @param biasNudges: the array that stores the desired nudges
      */
-    private void calculateBiasNudgesL2(double[] biasNudge) {
-        for(int i = 0; i < getNumNeuronsL2(); i++){ // there is an L2 bias for every L2 neuron
-            int neuronIndex = getNeuronIndex(2,i + 1);
-            int biasIndex = getBiasIndex(2,i + 1);
+    private void calculateBiasNudgesL2(double[] biasNudges) {
+        for(int i = 0; i < numNeuronsLayer[1]; i++){
+            int index = getBiasIndex(2, i + 1);
 
-            biasNudge[biasIndex] = getL2BiasNudge(i);
+            biasNudges[index] = getBiasNudgeL2(i);
         }
     }
 
-
-
     /**
-     * Gets the desired nudge of a bias in the second layer
-     * @param place: the placement of the bias within the second layer
-     * @return: the nudge we desire
+     * returns the desired nudge of a bias in layer 3
+     * @param place the place of the neuron in layer 3 minus 1 (first one will be place = 0)
+     * @return the desired nudge of a bias in layer 3
      */
-    private double getL2BiasNudge(int place) {
-        if(place >= getNumNeuronsL2()){
-            throw new IllegalArgumentException("There is no neuron " + (place + 1) + " in layer 2.");
-        }
-
+    private double getBiasNudgeL2(int place) {
         /*
-         * Nudging a bias in layer 2 cannot directly affect the cost function.
-         *
-         * Nudging a bias in layer 2 can affect the weighted sum of its corresponding neuron.
-         *
-         * Due to the chain rule, dC/db(2,n) = dz(2,n)/db(2,n) * dC/dz(2,n)
-         *
-         * Since we just add the bias to the weighted sum, dz and db have a 1-1 correspondence
-         * based on changes to the bias. Therefore, dz(2,n)/db(2,n) = 1
-         *
-         * Therefore, dC/db(2,n) = dC/dz(2,n)
+        It's just the nudge of the weighted sum of the neuron this bias is attached to
          */
 
-        return 0;
+        return getWeightedSumNudgeL2(place);
     }
 
-
     /**
-     * Calcualates how much we should nudge each weight pointing to layer 2 according to the current data set
+     * Calcualates how much we should nudge each weight pointing to  layer 4 according to the current data set
      * @param weightNudge: the array that stores the desired nudges
      */
     private void calculateWeightNudgesL2(double[] weightNudge) {
+        // one weight connects every weight in Layer 3 to every neuron in layer 4
+        int index;
+
+        for(int startPlace = 0; startPlace < numNeuronsLayer[0]; startPlace++){ // for every neuron in layer 3
+            for(int endPlace = 0; endPlace < numNeuronsLayer[1]; endPlace++){ // for every neuron in layer 4
+                // add 1, because the for loop starts at 0
+                index = getWeightIndex(startPlace + 1,3,endPlace + 1);
+                weightNudge[index] = getWeightNudgeL2(startPlace,endPlace);
+            }
+        }
+    }
+
+    private double getWeightNudgeL2(int startPlace, int endPlace) {
+        /*
+         * Nudging a weight pointing to layer 4 cannot directly affect the cost function.
+         *
+         * Nudging a weight pointing to layer 4 can affect the weighted sum of its
+         * corresponding neuron.
+         *
+         * Due to the chain rule, dC/dW(b,3,c) = dz(3,c)/dW(b,3,c) * dC/dZ(3,c)
+         *
+         * The effect of dW(b,3,c) on dZ(3,c) is equal to the product of dW(b,3,c) and A(2,b).
+         * Therefore,the effect of changing dW(b,3,c) is exactly proportional to A(2,b).
+         *
+         * Therefore, dz(3,c)/dW(b,3,c) = A(2,b)
+         */
+        double n1Activation = getActivation(2, startPlace + 1);
+        double n2weightedSumNudge = getWeightedSumNudgeL2(endPlace);
+        return n1Activation * n2weightedSumNudge;
     }
 
 
