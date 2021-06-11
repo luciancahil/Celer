@@ -704,7 +704,7 @@ public class NeuralNetwork {
 
     /**
      * Returns the desired nudge on a given weighted sum in L4
-     * @param place the place of the weighted sum in layer 4
+     * @param place the place of the weighted sum in layer 4 minus one
      * @return the desired nudge
      */
     private double getWeightedSumNudgeL4(int place) {
@@ -795,8 +795,8 @@ public class NeuralNetwork {
          *
          * Due to the chain rule, dC/dW(c,4,d) = dz(4,d)/dW(c,4,d) * dC/dZ(4,d)
          *
-         * The effect of W(c,4,d) is equal to the product of W(c,4,d) and A(3,c). Therefor,
-         * the effect of changing W(c,4,d) is exactly proportional to A(3,c).
+         * The effect of W(c,4,d) on dZ(4,d) is equal to the product of W(c,4,d) and A(3,c).
+         * Therefore,the effect of changing W(c,4,d) is exactly proportional to A(3,c).
          *
          * Therefore, dC/dB(4,d) = A(3,c)
          */
@@ -928,6 +928,7 @@ public class NeuralNetwork {
 
     public void printAllActivation(){
         for(int i = 1; i <= NUM_LAYERS; i++){
+            System.out.print("Layer " + i + ": ");
             printActivation(i);
         }
     }
@@ -957,14 +958,25 @@ public class NeuralNetwork {
 
         calculateWeightNudgesL4(weightTest);
 
+        //printAllActivation();
+
+        for(int i = 0; i < numNeuronsLayer[3]; i++){
+            System.out.println(currentDesiredOutput[i]);
+        }
+
         for(int start = 0; start < numNeuronsLayer[2]; start++){
             for(int end = 0; end < numNeuronsLayer[3]; end++){
                 int index = getWeightIndex(start + 1, 4, end + 1);
                 double value = weightTest[index];
-                System.out.println(value + ", ");
+                System.out.println("From L3W" + (start + 1) + " to L4W" + (end + 1) + ": " + value + ", ");
             }
 
             System.out.println();
+        }
+
+        for(int i = 0; i < numNeuronsLayer[3]; i++){
+            System.out.println(getWeightedSumNudgeL4(i)
+            );
         }
     }
 
