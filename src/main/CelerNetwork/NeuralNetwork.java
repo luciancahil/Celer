@@ -815,6 +815,18 @@ public class NeuralNetwork {
         // the desired nudges summed up over all neurons in the 4th layer
         double totalNudges = 0;
 
+        // neuron
+        int index = getNeuronIndex(3, place + 1);
+
+        // value already stored in the activation Nudges array
+        double preValue = activationNudges[index];
+
+        if(preValue != DEFAULT_NUDGE){
+            // the only way we are NOT at the default alue is we already calculated the necessary nudge.
+            // just return that
+            return preValue;
+        }
+
 
         /*
          * Changing the activation of a neuron in layer 3 cannot directly affect the cost function.
@@ -870,7 +882,7 @@ public class NeuralNetwork {
          * activation nudge by said derivative
          */
 
-        weightedSumNudges[neuronIndex] = NeuralMath.reluDeriv(wSum) * getActivationNudgeL4(place);
+        weightedSumNudges[neuronIndex] = NeuralMath.reluDeriv(wSum) * getActivationNudgeL3(place);
         return weightedSumNudges[neuronIndex];
     }
 
