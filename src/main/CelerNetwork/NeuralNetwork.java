@@ -649,7 +649,7 @@ public class NeuralNetwork {
     private void calculateBiasNudges(double[] biasNudge) {
         calculateBiasNudgesL2(biasNudge);
         calculateBiasNudgesL3(biasNudge);
-        getBiasNudgesL4(biasNudge);
+        calculateBiasNudgesL4(biasNudge);
     }
 
     /**
@@ -745,7 +745,7 @@ public class NeuralNetwork {
      * Calculates how much we should nudge each bias in layer 4 according to the current dataset
      * @param biasNudge: the array that stores the desired nudges
      */
-    private void getBiasNudgesL4(double[] biasNudge) {
+    private void calculateBiasNudgesL4(double[] biasNudge) {
         for(int i = 0; i < getNumNeuronsL4(); i++){ // there is an L4 bias for every L4 neuron
             int biasIndex = getBiasIndex(4,i + 1);
 
@@ -1012,8 +1012,8 @@ public class NeuralNetwork {
          * dC/dA(2,b) = Σ(W(b,3,c) * dC/dZ(3,c))
          */
 
-        for(int i = 0; i <= numNeuronsLayer[1]; i++){
-            double curChange = weights[getWeightIndex((place + 1), 3, i)] * getWeightedSumNudgeL3(i);
+        for(int i = 1; i <= numNeuronsLayer[1]; i++){
+            double curChange = weights[getWeightIndex((place + 1), 3, i)] * getWeightedSumNudgeL3(i - 1);
 
             totalNudges += curChange;
         }
@@ -1094,7 +1094,7 @@ public class NeuralNetwork {
         for(int startPlace = 0; startPlace < numNeuronsLayer[0]; startPlace++){ // for every neuron in layer 1
             for(int endPlace = 0; endPlace < numNeuronsLayer[1]; endPlace++){ // for every neuron in layer 2
                 // add 1, because the for loop starts at 0
-                index = getWeightIndex(startPlace + 1,3,endPlace + 1);
+                index = getWeightIndex(startPlace + 1,2,endPlace + 1);
                 weightNudge[index] = getWeightNudgeL2(startPlace,endPlace);
             }
         }
@@ -1179,7 +1179,7 @@ public class NeuralNetwork {
 
     public void printAllActivation(){
         for(int i = 1; i <= NUM_LAYERS; i++){
-            System.out.print("Layer " + i + ": ");
+            System.out.print("Layer " + i + " activations: ");
             printActivation(i);
         }
     }
@@ -1206,37 +1206,145 @@ public class NeuralNetwork {
         resetNudgeArrays();
 
         double[] weightTest = new double[numWeights];
+        double[] biasTest = new double[numBiases];
 
         calculateWeightNudgesL4(weightTest);
+        calculateWeightNudgesL3(weightTest);
+        calculateWeightNudgesL2(weightTest);
 
-        //printAllActivation();
+        calculateBiasNudgesL4(biasTest);
+        calculateBiasNudgesL3(biasTest);
+        calculateBiasNudgesL2(biasTest);
 
-        for(int i = 0; i < numNeuronsLayer[3]; i++){
-            System.out.println(currentDesiredOutput[i]);
+
+        //printing weighted sums
+        for(int layer = 1; layer <= 4; layer++){
+            for(int place = 1; place <= numNeuronsLayer[layer - 1]; place++){
+                System.out.println("The weighted sum of neuron " + place + " on layer " + layer + " is: " + neuronWeightedSums[getNeuronIndex(layer, place)]);
+            }
         }
 
-        for(int i = 2; i <= 4; i++){
-            for(int j = 1; j <= 3; j++){
-                for(int k = 1; k <=3; k++){
-                    System.out.println("From Neuron " + j + " in layer " + (i - 1) + " to neuron " + k + " in layer " + i + ": " + weights[getWeightIndex(j,i,k)]);
+        System.out.println();
+
+        //printing activations:
+        printAllActivation();
+
+        //printing desired:
+        System.out.println("Desired:");
+        for(int i = 0; i <  numNeuronsLayer[3]; i++){
+            System.out.print(currentDesiredOutput[i] + " ");
+        }
+
+        System.out.println();
+        System.out.println();
+
+        for(int layer = 2; layer <= NUM_LAYERS; layer++){
+            for(int start = 1; start <= numNeuronsLayer[layer - 2]; start++){
+                for(int end = 1; end <= numNeuronsLayer[layer - 1]; end++){
+                    System.out.println("The weight that points from neuron " + start + " in layer " + (layer - 1) + " to neuron " + end + " in " + (layer) + ": " + weights[getWeightIndex(start, layer, end)]);
                 }
             }
         }
-        /*
-        for(int start = 0; start < numNeuronsLayer[2]; start++){
-            for(int end = 0; end < numNeuronsLayer[3]; end++){
-                int index = getWeightIndex(start + 1, 4, end + 1);
-                double value = weightTest[index];
-                System.out.println("From L3W" + (start + 1) + " to L4W" + (end + 1) + ": " + value + ", ");
-            }
 
+        System.out.println();
+        System.out.println("ActivationL4 Nudges");
+        for(int i = 0; i < 3; i++){
+            System.out.println(getActivationNudgeL4(i));
+        }
+
+        System.out.println();
+        System.out.println("WSL4 Nudges");
+
+        //weighted sum L4 nudges
+        for(int i = 0; i < 3; i++){
+            System.out.println(getWeightedSumNudgeL4(i));
+        }
+
+        System.out.println();
+        System.out.println("BiasL4 Nudges");
+
+        //weighted sum L4 nudges
+        for(int i = 0; i < 3; i++){
+            int index = getBiasIndex(4, i + 1);
+            System.out.println(biasTest[index]);
+        }
+
+
+        System.out.println();
+        System.out.println("L4 weight nudges");
+        //weight L4 nudges
+        for(int i = 1; i <= 3; i++){
+            for(int j = 1; j <= 3; j++){
+                int index = getWeightIndex(i,4,j);
+                System.out.print(weightTest[index] + " ");
+            }
             System.out.println();
         }
 
-        for(int i = 0; i < numNeuronsLayer[3]; i++){
-            System.out.println(getWeightedSumNudgeL4(i)
-            );
-        }*/
+        System.out.println();
+        System.out.println("ActivationL3 Nudges");
+        for(int i = 0; i < 3; i++){
+            System.out.println(getActivationNudgeL3(i));
+        }
+
+        System.out.println();
+        System.out.println("WSL3 Nudges");
+
+        for(int i = 0; i < 3; i++){
+            System.out.println(getWeightedSumNudgeL3(i));
+        }
+
+
+        System.out.println();
+        System.out.println("BiasL3 Nudges");
+
+        for(int i = 0; i < 3; i++){
+            int index = getBiasIndex(3, i + 1);
+            System.out.println(biasTest[index]);
+        }
+
+
+        System.out.println();
+        System.out.println("L3 weight nudges");
+        for(int i = 1; i <= 3; i++){
+            for(int j = 1; j <= 3; j++){
+                int index = getWeightIndex(i,3,j);
+                System.out.print(weightTest[index] + " ");
+            }
+            System.out.println();
+        }
+
+
+        System.out.println();
+        System.out.println("ActivationL2 Nudges");
+        for(int i = 0; i < 3; i++){
+            System.out.println(getActivationNudgeL2(i));
+        }
+
+        System.out.println();
+        System.out.println("WSL2 Nudges");
+
+        for(int i = 0; i < 3; i++){
+            System.out.println(getWeightedSumNudgeL2(i));
+        }
+
+        System.out.println();
+        System.out.println("BiasL2 Nudges");
+
+        for(int i = 0; i < 3; i++){
+            int index = getBiasIndex(2, i + 1);
+            System.out.println(biasTest[index]);
+        }
+
+        System.out.println();
+        System.out.println("L2 weight nudges");
+        for(int i = 1; i <= 3; i++){
+            for(int j = 1; j <= 3; j++){
+                int index = getWeightIndex(i,2,j);
+                System.out.print(weightTest[index] + " ");
+            }
+            System.out.println();
+        }
     }
 
     /*
