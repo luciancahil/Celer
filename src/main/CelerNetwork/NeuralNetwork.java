@@ -1301,7 +1301,8 @@ public class NeuralNetwork {
     /**
      * A function meant for debugging
      */
-    public void test(){
+    public void printAllValues(){
+        // change this to choose which data we run
         runExample(trainingDataInput[4],trainingDataOutput[4]);
         resetNudgeArrays();
 
@@ -1318,7 +1319,7 @@ public class NeuralNetwork {
 
 
         //printing weighted sums
-        for(int layer = 1; layer <= 4; layer++){
+        for(int layer = 1; layer <= NUM_LAYERS; layer++){
             for(int place = 1; place <= numNeuronsLayer[layer - 1]; place++){
                 System.out.println("The weighted sum of neuron " + place + " on layer " + layer + " is: " + neuronWeightedSums[getNeuronIndex(layer, place)]);
             }
@@ -1331,7 +1332,7 @@ public class NeuralNetwork {
 
         //printing desired:
         System.out.println("Desired:");
-        for(int i = 0; i <  numNeuronsLayer[3]; i++){
+        for(int i = 0; i <  numNeuronsLayer[NUM_LAYERS - 1]; i++){
             System.out.print(currentDesiredOutput[i] + " ");
         }
 
