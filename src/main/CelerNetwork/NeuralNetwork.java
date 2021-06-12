@@ -651,10 +651,11 @@ public class NeuralNetwork {
                 }
 
 
-                // the following loop runs through a single batch
+
                 zeroArrays(avgBiasNudge);
                 zeroArrays(avgWeightNudge);
 
+                // the following loop runs through a single batch
                 for (int j = 0; j < curBatchSize; j++) {
                     // index of the current data inside the training data array
                     int dataIndex = j + batchSize * i;
@@ -686,9 +687,11 @@ public class NeuralNetwork {
                     biases[k] = biases[k] + learningRate * avgBiasNudge[k];
                 }
 
+
                 for (int k = 0; k < numWeights; k++) {
                     weights[k] = weights[k] + learningRate * avgWeightNudge[k];
                 }
+
 
                 // get the cost function after nudges
                 averagePostCost = 0;
@@ -699,7 +702,8 @@ public class NeuralNetwork {
                     averagePostCost = NeuralMath.updateRollingAvg(averagePostCost, curCost, (k + 1));
                 }
 
-                if (averagePostCost < averagePostCost) {
+                // check if the cost function has been lowered
+                if (averagePostCost < averagePreCost) {
                     // the cost function has been lowered
                     badBatches = 0;
 
@@ -737,6 +741,11 @@ public class NeuralNetwork {
             }
 
         }
+
+        System.out.println("Done!");
+        System.out.println("Rounds: " + rounds);
+        System.out.println("Learning Rate: "+ learningRate);
+        System.out.println("Good batche percentage: " + (double)numGoodBatches/numBatches);
     }
 
     private void zeroArrays(double[] arr){
