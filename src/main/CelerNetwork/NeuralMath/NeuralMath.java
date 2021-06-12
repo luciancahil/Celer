@@ -15,7 +15,20 @@ public class NeuralMath {
         if(input >= 0){
             return input;
         }else{
-            return input *= LEAKY_COEFFICIENT;
+            return input * LEAKY_COEFFICIENT;
+        }
+    }
+
+    /**
+     * Returns the derivative of the RELU function based on a given input
+     * @param input the input to the RELU function
+     * @return derivative of the RELU function
+     */
+    public static double reluDeriv(double input){
+        if(input >= 0){
+            return 1;
+        }else{
+            return LEAKY_COEFFICIENT;
         }
     }
 
@@ -29,6 +42,61 @@ public class NeuralMath {
      */
     public static double sigmoid(double input){
         return 1.0 / (1 + Math.pow(Math.E, input * - 1));
+    }
+
+
+    public static double sigmoidDeriv(double input){
+        double exp = Math.exp(input);
+
+        if(Double.isInfinite(exp)){
+            return 0;
+        }
+
+        return exp / Math.pow(1 + exp, 2);
+    }
+
+
+    /**
+     * Updates the avgs array by adding newVal to it.
+     *
+     * @param avgs the array containg a running average
+     * @param newVals the values we would like to include in the avgs
+     * @param count the number of values the average has, including the new values
+     */
+    public static void updateRollingAvgs(double[] avgs, double[] newVals, int count){
+        if(avgs.length != newVals.length){
+            throw new IllegalArgumentException("Avgs and NewVals must be same-sized arrays");
+        }
+
+        for(int i = 0; i < avgs.length; i++){
+            avgs[i] = updateRollingAvg(avgs[i], newVals[i], count);
+        }
+    }
+
+    /**
+     * Returns the new rolling average by adding newVal to the average
+     * @param avg the rolling average without newVal
+     * @param newVal the value we wish to add
+     * @param count the number of values the rolling average contains, including newVal
+     * @return
+     */
+    public static double updateRollingAvg(double avg, double newVal, int count) {
+        if(count == 1 && avg != 0){
+            throw new IllegalArgumentException("There are no previous elements, so the average should be 0");
+        }
+
+        /*
+         * Proof this works:
+         *
+         * The sum of all values without newVal is equal to avg * (count - 1) = avg * count - avg
+         *
+         * The sum including newVal is avg * count - avg + newVal
+         *
+         * The new average is (avg * count - avg + newVal) / count
+         *
+         * Dividing through ends up with avg - avg / count + newVal / count
+         */
+        return avg - avg/count + newVal/count;
     }
 
 }

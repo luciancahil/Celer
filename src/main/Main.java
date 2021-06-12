@@ -4,50 +4,50 @@ import main.CelerNetwork.NeuralMath.NeuralMath;
 
 
 import java.io.*;
+import java.util.Random;
 
 
 public class Main {
     public static void main(String[] args) throws IOException {
-        //double[][] inputArray = new double[60000][784];
-        //double[][]  outputArray = new double[60000][10];
-        double[] input = {1.3, 6.4, 7.8, 9.9, 2.3};
+        /*
+        int inputSize = 784;
+        int outputSize = 10;*/
+
+        int inputSize = 3;
+        int outputSize = 3;
+        int numSamples = 1000;
+
+        double[][] inputArray = new double[numSamples][inputSize];
+        double[][]  outputArray = new double[numSamples][outputSize];
+        Random valuesGen = new Random(5361463215537840273l);
+
+        for(int i = 0; i <numSamples; i ++){
+            for(int j = 0; j < inputSize; j++){
+                inputArray[i][j] = (valuesGen.nextDouble() * 10) % 10;
+                outputArray[i][j] = NeuralMath.sigmoid(valuesGen.nextDouble() * 10) ;
+            }
+        }
+
 
         //setData("data/mnist_digits.csv", inputArray, outputArray);
 
-        NeuralNetwork network = new NeuralNetwork(5, 2, 769706441478710272L);
-        network.runExample(input);
-        System.out.print("Layer Two: ");
-        network.printWeightedSums(2);
-        System.out.println();
+        //NeuralNetwork network = new NeuralNetwork(inputSize, outputSize,5361463625739800576l);
+        NeuralNetwork network = new NeuralNetwork(inputSize, outputSize,5361512225739800576l);
 
-
-
-        for(int i = 1; i <= network.getlayerSize(2); i++) {
-            System.out.println();
-            System.out.print("Weights to " + i + ":");
-            network.printWeightsTo(2, i);
-        }
-        System.out.println();
-        System.out.print("Layer Three: ");
-        network.printWeightedSums(3);
-        System.out.println();
-        System.out.print("Biases: ");
-        network.printBiases(2);
-
+        network.setData(inputArray,outputArray);
+        network.train();
     }
-
-
 
     /**
      *
-     * @param fileName - The path to the data file we use as data
+     * @param filePath - The path to the data file we use as data
      * @param inputArray - The array we place all input values into
      * @param outputArray - The array we place all output values into
      * @throws IOException: When the filepath does not lead to a valid path
      */
-    private static void setData(String fileName, double[][] inputArray, double[][] outputArray) throws IOException {
+    private static void setData(String filePath, double[][] inputArray, double[][] outputArray) throws IOException {
         // file reader that will read the data file
-        FileReader data = new FileReader(fileName);
+        FileReader data = new FileReader(filePath);
 
         // BufferedReader that will read the data file
         BufferedReader bufferedRead = new BufferedReader(data);
