@@ -175,6 +175,9 @@ public class NeuralNetwork {
     // an array to store the desired nudges of activations during a training session.
     private final double[] weightedSumNudges;
 
+    // we will multiply the nudges by this number before adjusting the biases and weights
+    private double learningRate = 1;
+
 
     /**
      * Function: Construction of a brand new neural Network with a randomly generated seed
@@ -599,6 +602,7 @@ public class NeuralNetwork {
         for(int i = 0; i < numBatches; i++){
             // setting cur batch size
 
+            // setting all values in the Z and A nudge arrays back to the default value
             resetNudgeArrays();
 
             if(i < numBatches - 1){
@@ -616,6 +620,7 @@ public class NeuralNetwork {
                 // runs the network with the proper data as input
                 int dataIndex = j + batchSize * i;
 
+                // run the network on the data set we want
                 runExample(trainingDataInput[dataIndex], trainingDataOutput[dataIndex]);
 
                 // set proper values for biasNudge
@@ -627,6 +632,15 @@ public class NeuralNetwork {
                 // add values to the running averages
                 NeuralMath.updateRollingAvgs(avgBiasNudge,biasNudge,j);
                 NeuralMath.updateRollingAvgs(avgWeightNudge,weightNudge,j);
+            }
+
+            // add the nudges to the values of the weights and biases
+            for(int k = 0; k < numBiases; k++){
+                biases[k] = biases[k] + learningRate * avgBiasNudge[k];
+            }
+
+            for(int k = 0; k < numWeights; k++){
+                weights[k] = weights[k] + learningRate * avgWeightNudge[k];
             }
 
         }
