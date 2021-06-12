@@ -15,7 +15,7 @@ public class Main {
 
         int inputSize = 3;
         int outputSize = 3;
-        int numSamples = 40;
+        int numSamples = 1000;
 
         double[][] inputArray = new double[numSamples][inputSize];
         double[][]  outputArray = new double[numSamples][outputSize];
@@ -35,7 +35,7 @@ public class Main {
         NeuralNetwork network = new NeuralNetwork(inputSize, outputSize,5361512225739800576l);
 
         network.setData(inputArray,outputArray);
-        network.printAllValues();
+        network.train();
     }
 
     /**

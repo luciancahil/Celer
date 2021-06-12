@@ -587,7 +587,7 @@ public class NeuralNetwork {
         final double[] avgWeightNudge = new double[numWeights];
 
         // the bias nudges desired by a single set of data
-        final double[] biasNudge = new double[numWeights];
+        final double[] biasNudge = new double[numBiases];
 
         // the weigh nudges desired by a single set of data
         final double[] weightNudge = new double[numWeights];
@@ -597,7 +597,7 @@ public class NeuralNetwork {
         final int batchSize = 100;
 
         // the number of batches we can afford to run with the number of training examples
-        final int numBatches = numTrainingExamples / batchSize + 1;
+        final int numBatches = numTrainingExamples / batchSize;
 
         // the size of the current batch.
         // will be equal to batchSize variable except for the last value, which will
@@ -605,10 +605,10 @@ public class NeuralNetwork {
         int curBatchSize;
 
         // the average cost before we made any nudges
-        double averagePreCost = 0;
+        double averagePreCost;
 
         // the average cost of a batch after we made nudges
-        double averagePostCost = 0;
+        double averagePostCost;
 
         // the number of batches in a row that have had their costs increase due to nudges
         int badBatches = 0;
@@ -636,6 +636,7 @@ public class NeuralNetwork {
 
             rounds++;
             for (int i = 0; i < numBatches; i++) {
+                averagePreCost = 0;
 
 
                 // setting all values in the Z and A nudge arrays back to the default value
@@ -651,6 +652,8 @@ public class NeuralNetwork {
 
 
                 // the following loop runs through a single batch
+                zeroArrays(avgBiasNudge);
+                zeroArrays(avgWeightNudge);
 
                 for (int j = 0; j < curBatchSize; j++) {
                     // index of the current data inside the training data array
@@ -674,8 +677,8 @@ public class NeuralNetwork {
                     calculateWeightNudges(weightNudge);
 
                     // add values to the running averages
-                    NeuralMath.updateRollingAvgs(avgBiasNudge, biasNudge, j);
-                    NeuralMath.updateRollingAvgs(avgWeightNudge, weightNudge, j);
+                    NeuralMath.updateRollingAvgs(avgBiasNudge, biasNudge, j + 1);
+                    NeuralMath.updateRollingAvgs(avgWeightNudge, weightNudge, j + 1);
                 }
 
                 // add the nudges to the values of the weights and biases
@@ -688,6 +691,7 @@ public class NeuralNetwork {
                 }
 
                 // get the cost function after nudges
+                averagePostCost = 0;
                 for (int k = 0; k < batchSize; k++) {
                     int dataIndex = k + batchSize * i;
                     double curCost = getCost(trainingDataInput[dataIndex], trainingDataOutput[dataIndex]);
@@ -709,15 +713,18 @@ public class NeuralNetwork {
                     }
                 } else {
                     // the cost function has increased. We have a bad batch, and may need to decrease the learning rate
-                    if (badBatches >= BAD_BATCH_TOLERANCE) {
-                        // undo the nudges to the values of the weights and biases
-                        for (int k = 0; k < numBiases; k++) {
-                            biases[k] = biases[k] - learningRate * avgBiasNudge[k];
-                        }
 
-                        for (int k = 0; k < numWeights; k++) {
-                            weights[k] = weights[k] - learningRate * avgWeightNudge[k];
-                        }
+                    // undo the nudges to the values of the weights and biases
+                    for (int k = 0; k < numBiases; k++) {
+                        biases[k] = biases[k] - learningRate * avgBiasNudge[k];
+                    }
+
+                    for (int k = 0; k < numWeights; k++) {
+                        weights[k] = weights[k] - learningRate * avgWeightNudge[k];
+                    }
+
+                    if (badBatches >= BAD_BATCH_TOLERANCE) {
+                        // we have had many bad batches in a row. It is time to reduce the learning rate
 
                         // reduce the learning rate
                         learningRate /= LEARNING_REDUCTION_RATE;
@@ -729,6 +736,12 @@ public class NeuralNetwork {
 
             }
 
+        }
+    }
+
+    private void zeroArrays(double[] arr){
+        for(int i = 0; i < arr.length; i++){
+            arr[i] = 0;
         }
     }
 
