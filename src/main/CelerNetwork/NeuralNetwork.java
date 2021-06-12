@@ -110,6 +110,7 @@ public class NeuralNetwork {
     // the number of examples we are using to test the network. About 10% of total examples
     private int numTestingExamples;
 
+
     /*
      * The array that stores information about the activation of a given neuron
      * All the neurons in the input layer are stored first, then the first hidden
@@ -180,6 +181,9 @@ public class NeuralNetwork {
 
     // the amount we lower the learning rate by each time we need to
     private final static double LEARNING_REDUCTION_RATE = 10;
+
+    // once the learning rate becomes this value, we will stop the network's training
+    private final static double FINAL_LEARNING_RATE = Math.pow(10,-7);
 
 
     /**
@@ -614,90 +618,92 @@ public class NeuralNetwork {
 
 
 
+        while(learningRate > FINAL_LEARNING_RATE) { // run the neural network until the learning rate is sufficiently low
+                                                    // then finish the current cycle
+            for (int i = 0; i < numBatches; i++) {
+                // setting cur batch size
 
-        for(int i = 0; i < numBatches; i++){
-            // setting cur batch size
+                // setting all values in the Z and A nudge arrays back to the default value
+                resetNudgeArrays();
 
-            // setting all values in the Z and A nudge arrays back to the default value
-            resetNudgeArrays();
-
-            if(i < numBatches - 1){
-                // not the final batch
-                curBatchSize = batchSize;
-            }else{
-                // on final batch
-                curBatchSize = batchSize + numTrainingExamples % batchSize;
-            }
-
-
-            // the following loop runs through a single batch
-
-            for(int j = 0; j < curBatchSize; j++){
-                // index of the current data inside the training data array
-                int dataIndex = j + batchSize * i;
-
-                // the cost function based on this one data set
-                double curCost;
-
-                // run the network on the data set we want
-                runExample(trainingDataInput[dataIndex], trainingDataOutput[dataIndex]);
-
-                curCost = getCost(trainingDataInput[dataIndex], trainingDataOutput[dataIndex]);
-
-                averagePreCost = NeuralMath.updateRollingAvg(averagePreCost, curCost,(j + 1));
-
-
-                // set proper values for biasNudge
-                calculateBiasNudges(biasNudge);
-
-                // set Proper values for weighNudge
-                calculateWeightNudges(weightNudge);
-
-                // add values to the running averages
-                NeuralMath.updateRollingAvgs(avgBiasNudge,biasNudge,j);
-                NeuralMath.updateRollingAvgs(avgWeightNudge,weightNudge,j);
-            }
-
-            // add the nudges to the values of the weights and biases
-            for(int k = 0; k < numBiases; k++){
-                biases[k] = biases[k] + learningRate * avgBiasNudge[k];
-            }
-
-            for(int k = 0; k < numWeights; k++){
-                weights[k] = weights[k] + learningRate * avgWeightNudge[k];
-            }
-
-            // get the cost function after nudges
-            for(int k = 0; k < batchSize; k++){
-                int dataIndex = k + batchSize * i;
-                double curCost = getCost(trainingDataInput[dataIndex], trainingDataOutput[dataIndex]);
-
-                averagePostCost = NeuralMath.updateRollingAvg(averagePostCost,curCost, (k + 1));
-            }
-
-            if(averagePostCost < averagePostCost){
-                // the cost function has been lowered
-                badBatches = 0;
-            }else{
-                // the cost function has increased. We have a bad batch, and may need to decrease the learning rate
-                if(badBatches >= BAD_BATCH_TOLERANCE){
-                    // undo the nudges to the values of the weights and biases
-                    for(int k = 0; k < numBiases; k++){
-                        biases[k] = biases[k] - learningRate * avgBiasNudge[k];
-                    }
-
-                    for(int k = 0; k < numWeights; k++){
-                        weights[k] = weights[k] - learningRate * avgWeightNudge[k];
-                    }
-
-                    // reduce the learning rate
-                    learningRate /= LEARNING_REDUCTION_RATE;
-                    badBatches = 0;
-                }else{
-                    badBatches++;
+                if (i < numBatches - 1) {
+                    // not the final batch
+                    curBatchSize = batchSize;
+                } else {
+                    // on final batch
+                    curBatchSize = batchSize + numTrainingExamples % batchSize;
                 }
-            }
 
+
+                // the following loop runs through a single batch
+
+                for (int j = 0; j < curBatchSize; j++) {
+                    // index of the current data inside the training data array
+                    int dataIndex = j + batchSize * i;
+
+                    // the cost function based on this one data set
+                    double curCost;
+
+                    // run the network on the data set we want
+                    runExample(trainingDataInput[dataIndex], trainingDataOutput[dataIndex]);
+
+                    curCost = getCost(trainingDataInput[dataIndex], trainingDataOutput[dataIndex]);
+
+                    averagePreCost = NeuralMath.updateRollingAvg(averagePreCost, curCost, (j + 1));
+
+
+                    // set proper values for biasNudge
+                    calculateBiasNudges(biasNudge);
+
+                    // set Proper values for weighNudge
+                    calculateWeightNudges(weightNudge);
+
+                    // add values to the running averages
+                    NeuralMath.updateRollingAvgs(avgBiasNudge, biasNudge, j);
+                    NeuralMath.updateRollingAvgs(avgWeightNudge, weightNudge, j);
+                }
+
+                // add the nudges to the values of the weights and biases
+                for (int k = 0; k < numBiases; k++) {
+                    biases[k] = biases[k] + learningRate * avgBiasNudge[k];
+                }
+
+                for (int k = 0; k < numWeights; k++) {
+                    weights[k] = weights[k] + learningRate * avgWeightNudge[k];
+                }
+
+                // get the cost function after nudges
+                for (int k = 0; k < batchSize; k++) {
+                    int dataIndex = k + batchSize * i;
+                    double curCost = getCost(trainingDataInput[dataIndex], trainingDataOutput[dataIndex]);
+
+                    averagePostCost = NeuralMath.updateRollingAvg(averagePostCost, curCost, (k + 1));
+                }
+
+                if (averagePostCost < averagePostCost) {
+                    // the cost function has been lowered
+                    badBatches = 0;
+                } else {
+                    // the cost function has increased. We have a bad batch, and may need to decrease the learning rate
+                    if (badBatches >= BAD_BATCH_TOLERANCE) {
+                        // undo the nudges to the values of the weights and biases
+                        for (int k = 0; k < numBiases; k++) {
+                            biases[k] = biases[k] - learningRate * avgBiasNudge[k];
+                        }
+
+                        for (int k = 0; k < numWeights; k++) {
+                            weights[k] = weights[k] - learningRate * avgWeightNudge[k];
+                        }
+
+                        // reduce the learning rate
+                        learningRate /= LEARNING_REDUCTION_RATE;
+                        badBatches = 0;
+                    } else {
+                        badBatches++;
+                    }
+                }
+
+            }
         }
     }
 
