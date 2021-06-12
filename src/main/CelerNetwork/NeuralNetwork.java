@@ -1202,7 +1202,7 @@ public class NeuralNetwork {
      * A function meant for debugging
      */
     public void test(){
-        runExample(trainingDataInput[0],trainingDataOutput[0]);
+        runExample(trainingDataInput[4],trainingDataOutput[4]);
         resetNudgeArrays();
 
         double[] weightTest = new double[numWeights];

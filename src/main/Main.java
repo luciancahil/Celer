@@ -15,7 +15,7 @@ public class Main {
 
         int inputSize = 3;
         int outputSize = 3;
-        int numSamples = 10;
+        int numSamples = 40;
 
         double[][] inputArray = new double[numSamples][inputSize];
         double[][]  outputArray = new double[numSamples][outputSize];
@@ -31,7 +31,8 @@ public class Main {
 
         //setData("data/mnist_digits.csv", inputArray, outputArray);
 
-        NeuralNetwork network = new NeuralNetwork(inputSize, outputSize,5361463625739800576l);
+        //NeuralNetwork network = new NeuralNetwork(inputSize, outputSize,5361463625739800576l);
+        NeuralNetwork network = new NeuralNetwork(inputSize, outputSize,5361512225739800576l);
 
         network.setData(inputArray,outputArray);
         network.test();
