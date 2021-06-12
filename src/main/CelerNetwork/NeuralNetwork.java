@@ -770,13 +770,13 @@ public class NeuralNetwork {
      */
     private double getActivationNudgeL4(int place){
         // the activation we wish we had on the current neuron
-        double desiredActivation = currentDesiredOutput[place];
+        double desiredActivation = currentDesiredOutput[place - 1];
 
         // activation on the current neuron
-        double actualActivation = getActivation(4, place + 1);
+        double actualActivation = getActivation(4, place);
 
         // index of the neuron in the neuron array
-        int index = getNeuronIndex(4, place + 1);
+        int index = getNeuronIndex(4, place);
 
         // value already stored in the activation Nudges array
         double preValue = activationNudges[index];
@@ -806,18 +806,18 @@ public class NeuralNetwork {
 
     /**
      * Returns the desired nudge on a given weighted sum in L4
-     * @param place the place of the weighted sum in layer 4 minus one
+     * @param place the place of the weighted sum in layer 4
      * @return the desired nudge
      */
     private double getWeightedSumNudgeL4(int place) {
         // add 1 because we are using a zero array in the loop we passed this from
-        int neuronIndex = getNeuronIndex(4, place + 1);
+        int neuronIndex = getNeuronIndex(4, place);
 
         // weighted sum of the neuron we are observing
         double wSum = neuronWeightedSums[neuronIndex];
 
         // index of the neuron in the neuron array
-        int index = getNeuronIndex(4, place + 1);
+        int index = getNeuronIndex(4, place);
         double preValue = weightedSumNudges[index];
 
         if(preValue != DEFAULT_NUDGE){
@@ -846,8 +846,8 @@ public class NeuralNetwork {
      * @param biasNudge: the array that stores the desired nudges
      */
     private void calculateBiasNudgesL4(double[] biasNudge) {
-        for(int i = 0; i < getNumNeuronsL4(); i++){ // there is an L4 bias for every L4 neuron
-            int biasIndex = getBiasIndex(4,i + 1);
+        for(int i = 1; i <= getNumNeuronsL4(); i++){ // there is an L4 bias for every L4 neuron
+            int biasIndex = getBiasIndex(4,i );
 
             biasNudge[biasIndex] = getL4BiasNudge(i);
         }
@@ -856,7 +856,7 @@ public class NeuralNetwork {
 
     /**
      * returns the desired nudge of a bias in layer 4
-     * @param place the place of the neuron in layer 4 minus 1 (first one will be place = 0)
+     * @param place the place of the neuron in layer 4
      * @return the desired nudge of a bias in layer 4
      */
     private double getL4BiasNudge(int place) {
@@ -885,10 +885,10 @@ public class NeuralNetwork {
         // one weight connects every weight in Layer 3 to every neuron in layer 4
         int index;
 
-        for(int startPlace = 0; startPlace < numNeuronsLayer[2]; startPlace++){ // for every neuron in layer 3
-            for(int endPlace = 0; endPlace < numNeuronsLayer[3]; endPlace++){ // for every neuron in layer 4
-                // add 1, because the for loop starts at 0
-                index = getWeightIndex(startPlace + 1,4,endPlace + 1);
+        for(int startPlace = 1; startPlace <= numNeuronsLayer[2]; startPlace++){ // for every neuron in layer 3
+            for(int endPlace = 1; endPlace <= numNeuronsLayer[3]; endPlace++){ // for every neuron in layer 4
+
+                index = getWeightIndex(startPlace,4,endPlace);
                 weightNudge[index] = getWeightNudgeL4(startPlace,endPlace);
             }
         }
@@ -896,8 +896,8 @@ public class NeuralNetwork {
 
     /**
      * Gets the nudge of a specific weight that points to a neuron in layer 4
-     * @param startPlace the place of the starting neuron in layer 3 minus 1 (first is 0)
-     * @param endPlace the place of the starting neuron in layer 4 minus 1 (first is 0)
+     * @param startPlace the place of the starting neuron in layer 3
+     * @param endPlace the place of the starting neuron in layer 4
      * @return the desired nudge of the given weight
      */
     private double getWeightNudgeL4(int startPlace, int endPlace) {
@@ -914,14 +914,14 @@ public class NeuralNetwork {
          *
          * Therefore, dC/dB(4,d) = A(3,c)
          */
-        double n1Activation = getActivation(3, startPlace + 1);
+        double n1Activation = getActivation(3, startPlace);
         double n2weightedSumNudge = getWeightedSumNudgeL4(endPlace);
         return n1Activation * n2weightedSumNudge;
     }
 
     /**
      * Returns the desired nudge of the activation of a neuron in Layer 3
-     * @param place the place of the neuron in the layer -1 (first one will have 0)
+     * @param place the place of the neuron in the layer
      * @return the desired nudge of an activation
      */
     private double getActivationNudgeL3(int place){
@@ -929,7 +929,7 @@ public class NeuralNetwork {
         double totalNudges = 0;
 
         // neuron
-        int index = getNeuronIndex(3, place + 1);
+        int index = getNeuronIndex(3, place);
 
         // value already stored in the activation Nudges array
         double preValue = activationNudges[index];
@@ -959,8 +959,8 @@ public class NeuralNetwork {
          * dC/dA(3,c) = Σ(W(c,4,d) * dC/dZ(4,d))
          */
 
-        for(int i = 0; i < numNeuronsLayer[3]; i++){
-            double curChange = weights[getWeightIndex((place + 1), 4, (i + 1))] * getWeightedSumNudgeL4(i);
+        for(int i = 1; i <= numNeuronsLayer[3]; i++){
+            double curChange = weights[getWeightIndex(place, 4, i )] * getWeightedSumNudgeL4(i);
 
             totalNudges += curChange;
         }
@@ -970,12 +970,12 @@ public class NeuralNetwork {
 
     /**
      * Returns the desired nudge on a given weighted sum in L3
-     * @param place the place of the weighted sum in layer 3 minus one
+     * @param place the place of the weighted sum in layer 3
      * @return the desired nudge
      */
     private double getWeightedSumNudgeL3(int place) {
         // add 1 because we are using a zero array in the loop we passed this from
-        int neuronIndex = getNeuronIndex(3, place + 1);
+        int neuronIndex = getNeuronIndex(3, place);
 
         // weighted sum of the neuron we are observing
         double wSum = neuronWeightedSums[neuronIndex];
@@ -1010,8 +1010,8 @@ public class NeuralNetwork {
      * @param biasNudges: the array that stores the desired nudges
      */
     private void calculateBiasNudgesL3(double[] biasNudges) {
-        for(int i = 0; i < numNeuronsLayer[2]; i++){
-            int index = getBiasIndex(3, i + 1);
+        for(int i = 1; i <= numNeuronsLayer[2]; i++){
+            int index = getBiasIndex(3, i);
 
             biasNudges[index] = getBiasNudgeL3(i);
         }
@@ -1019,7 +1019,7 @@ public class NeuralNetwork {
 
     /**
      * returns the desired nudge of a bias in layer 3
-     * @param place the place of the neuron in layer 3 minus 1 (first one will be place = 0)
+     * @param place the place of the neuron in layer 3
      * @return the desired nudge of a bias in layer 3
      */
     private double getBiasNudgeL3(int place) {
@@ -1038,10 +1038,10 @@ public class NeuralNetwork {
         // one weight connects every weight in Layer 3 to every neuron in layer 4
         int index;
 
-        for(int startPlace = 0; startPlace < numNeuronsLayer[1]; startPlace++){ // for every neuron in layer 2
-            for(int endPlace = 0; endPlace < numNeuronsLayer[2]; endPlace++){ // for every neuron in layer 3
+        for(int startPlace = 1; startPlace <= numNeuronsLayer[1]; startPlace++){ // for every neuron in layer 2
+            for(int endPlace = 1; endPlace <= numNeuronsLayer[2]; endPlace++){ // for every neuron in layer 3
                 // add 1, because the for loop starts at 0
-                index = getWeightIndex(startPlace + 1,3,endPlace + 1);
+                index = getWeightIndex(startPlace,3,endPlace);
                 weightNudge[index] = getWeightNudgeL3(startPlace,endPlace);
             }
         }
@@ -1049,8 +1049,8 @@ public class NeuralNetwork {
 
     /**
      * Gets the nudge of a specific weight that points to a neuron in layer 3
-     * @param startPlace the place of the starting neuron in layer 2 minus 1 (first is 0)
-     * @param endPlace the place of the starting neuron in layer 3 minus 1 (first is 0)
+     * @param startPlace the place of the starting neuron in layer 2
+     * @param endPlace the place of the starting neuron in layer 3
      * @return the desired nudge of the given weight
      */
     private double getWeightNudgeL3(int startPlace, int endPlace) {
@@ -1067,14 +1067,14 @@ public class NeuralNetwork {
          *
          * Therefore, dz(3,c)/dW(b,3,c) = A(2,b)
          */
-        double n1Activation = getActivation(2, startPlace + 1);
+        double n1Activation = getActivation(2, startPlace);
         double n2weightedSumNudge = getWeightedSumNudgeL3(endPlace);
         return n1Activation * n2weightedSumNudge;
     }
 
     /**
      * Returns the desired nudge of the activation of a neuron in Layer 2
-     * @param place the place of the neuron in the layer -1 (first one will have 0)
+     * @param place the place of the neuron in the layer
      * @return the desired nudge of an activation
      */
     private double getActivationNudgeL2(int place){
@@ -1082,7 +1082,7 @@ public class NeuralNetwork {
         double totalNudges = 0;
 
         // neuron
-        int index = getNeuronIndex(2, place + 1);
+        int index = getNeuronIndex(2, place);
 
         // value already stored in the activation Nudges array
         double preValue = activationNudges[index];
@@ -1113,7 +1113,7 @@ public class NeuralNetwork {
          */
 
         for(int i = 1; i <= numNeuronsLayer[1]; i++){
-            double curChange = weights[getWeightIndex((place + 1), 3, i)] * getWeightedSumNudgeL3(i - 1);
+            double curChange = weights[getWeightIndex(place, 3, i)] * getWeightedSumNudgeL3(i);
 
             totalNudges += curChange;
         }
@@ -1124,12 +1124,12 @@ public class NeuralNetwork {
 
     /**
      * Returns the desired nudge on a given weighted sum in L2
-     * @param place the place of the weighted sum in layer 2 minus one
+     * @param place the place of the weighted sum in layer 2
      * @return the desired nudge
      */
     private double getWeightedSumNudgeL2(int place) {
         // add 1 because we are using a zero array in the loop we passed this from
-        int neuronIndex = getNeuronIndex(2, place + 1);
+        int neuronIndex = getNeuronIndex(2, place);
 
         // weighted sum of the neuron we are observing
         double wSum = neuronWeightedSums[neuronIndex];
@@ -1163,8 +1163,8 @@ public class NeuralNetwork {
      * @param biasNudges: the array that stores the desired nudges
      */
     private void calculateBiasNudgesL2(double[] biasNudges) {
-        for(int i = 0; i < numNeuronsLayer[1]; i++){
-            int index = getBiasIndex(2, i + 1);
+        for(int i = 1; i <= numNeuronsLayer[1]; i++){
+            int index = getBiasIndex(2, i);
 
             biasNudges[index] = getBiasNudgeL2(i);
         }
@@ -1172,7 +1172,7 @@ public class NeuralNetwork {
 
     /**
      * returns the desired nudge of a bias in layer 2
-     * @param place the place of the neuron in layer 2 minus 1 (first one will be place = 0)
+     * @param place the place of the neuron in layer 2
      * @return the desired nudge of a bias in layer 2
      */
     private double getBiasNudgeL2(int place) {
@@ -1191,10 +1191,10 @@ public class NeuralNetwork {
         // one weight connects every weight in Layer 3 to every neuron in layer 4
         int index;
 
-        for(int startPlace = 0; startPlace < numNeuronsLayer[0]; startPlace++){ // for every neuron in layer 1
-            for(int endPlace = 0; endPlace < numNeuronsLayer[1]; endPlace++){ // for every neuron in layer 2
+        for(int startPlace = 1; startPlace <= numNeuronsLayer[0]; startPlace++){ // for every neuron in layer 1
+            for(int endPlace = 1; endPlace <= numNeuronsLayer[1]; endPlace++){ // for every neuron in layer 2
                 // add 1, because the for loop starts at 0
-                index = getWeightIndex(startPlace + 1,2,endPlace + 1);
+                index = getWeightIndex(startPlace,2,endPlace);
                 weightNudge[index] = getWeightNudgeL2(startPlace,endPlace);
             }
         }
@@ -1202,8 +1202,8 @@ public class NeuralNetwork {
 
     /**
      * Gets the nudge of a specific weight that points to a neuron in layer 3
-     * @param startPlace the place of the starting neuron in layer 2 minus 1 (first is 0)
-     * @param endPlace the place of the starting neuron in layer 3 minus 1 (first is 0)
+     * @param startPlace the place of the starting neuron in layer 2
+     * @param endPlace the place of the starting neuron in layer 3
      * @return the desired nudge of the given weight
      */
     private double getWeightNudgeL2(int startPlace, int endPlace) {
@@ -1220,7 +1220,7 @@ public class NeuralNetwork {
          *
          * Therefore, dz(2,b)/dW(a,2,b) = A(2,b)
          */
-        double n1Activation = getActivation(1, startPlace + 1);
+        double n1Activation = getActivation(1, startPlace);
         double n2weightedSumNudge = getWeightedSumNudgeL2(endPlace);
         return n1Activation * n2weightedSumNudge;
     }
@@ -1349,7 +1349,7 @@ public class NeuralNetwork {
 
         System.out.println();
         System.out.println("ActivationL4 Nudges");
-        for(int i = 0; i < 3; i++){
+        for(int i = 1; i <= 3; i++){
             System.out.println(getActivationNudgeL4(i));
         }
 
@@ -1357,7 +1357,7 @@ public class NeuralNetwork {
         System.out.println("WSL4 Nudges");
 
         //weighted sum L4 nudges
-        for(int i = 0; i < 3; i++){
+        for(int i = 1; i <=3; i++){
             System.out.println(getWeightedSumNudgeL4(i));
         }
 
@@ -1365,8 +1365,8 @@ public class NeuralNetwork {
         System.out.println("BiasL4 Nudges");
 
         //weighted sum L4 nudges
-        for(int i = 0; i < 3; i++){
-            int index = getBiasIndex(4, i + 1);
+        for(int i = 1; i <=3; i++){
+            int index = getBiasIndex(4, i);
             System.out.println(biasTest[index]);
         }
 
@@ -1384,14 +1384,14 @@ public class NeuralNetwork {
 
         System.out.println();
         System.out.println("ActivationL3 Nudges");
-        for(int i = 0; i < 3; i++){
+        for(int i = 1; i <=3; i++){
             System.out.println(getActivationNudgeL3(i));
         }
 
         System.out.println();
         System.out.println("WSL3 Nudges");
 
-        for(int i = 0; i < 3; i++){
+        for(int i = 1; i <=3; i++){
             System.out.println(getWeightedSumNudgeL3(i));
         }
 
@@ -1399,8 +1399,8 @@ public class NeuralNetwork {
         System.out.println();
         System.out.println("BiasL3 Nudges");
 
-        for(int i = 0; i < 3; i++){
-            int index = getBiasIndex(3, i + 1);
+        for(int i = 1; i <=3; i++){
+            int index = getBiasIndex(3, i);
             System.out.println(biasTest[index]);
         }
 
@@ -1418,22 +1418,22 @@ public class NeuralNetwork {
 
         System.out.println();
         System.out.println("ActivationL2 Nudges");
-        for(int i = 0; i < 3; i++){
+        for(int i = 1; i <=3; i++){
             System.out.println(getActivationNudgeL2(i));
         }
 
         System.out.println();
         System.out.println("WSL2 Nudges");
 
-        for(int i = 0; i < 3; i++){
+        for(int i = 1; i <=3; i++){
             System.out.println(getWeightedSumNudgeL2(i));
         }
 
         System.out.println();
         System.out.println("BiasL2 Nudges");
 
-        for(int i = 0; i < 3; i++){
-            int index = getBiasIndex(2, i + 1);
+        for(int i = 1; i <=3; i++){
+            int index = getBiasIndex(2, i);
             System.out.println(biasTest[index]);
         }
 
