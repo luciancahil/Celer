@@ -178,6 +178,9 @@ public class NeuralNetwork {
     // we will multiply the nudges by this number before adjusting the biases and weights
     private double learningRate = 1;
 
+    // the amount we lower the learning rate by each time we need to
+    private final static double LEARNING_REDUCTION_RATE = 10;
+
 
     /**
      * Function: Construction of a brand new neural Network with a randomly generated seed
@@ -597,6 +600,19 @@ public class NeuralNetwork {
         // include any straggles (if there are 299 examples, the last batch will have 199 members)
         int curBatchSize;
 
+        // the average cost before we made any nudges
+        double averagePreCost = 0;
+
+        // the average cost of a batch after we made nudges
+        double averagePostCost = 0;
+
+        // the number of batches in a row that have had their costs increase due to nudges
+        int badBatches = 0;
+
+        // the number of bad batchs we need in a row before we reduce the learning rate
+        final int BAD_BATCH_TOLERANCE = 5;
+
+
 
 
         for(int i = 0; i < numBatches; i++){
@@ -617,11 +633,19 @@ public class NeuralNetwork {
             // the following loop runs through a single batch
 
             for(int j = 0; j < curBatchSize; j++){
-                // runs the network with the proper data as input
+                // index of the current data inside the training data array
                 int dataIndex = j + batchSize * i;
+
+                // the cost function based on this one data set
+                double curCost;
 
                 // run the network on the data set we want
                 runExample(trainingDataInput[dataIndex], trainingDataOutput[dataIndex]);
+
+                curCost = getCost(trainingDataInput[dataIndex], trainingDataOutput[dataIndex]);
+
+                averagePreCost = NeuralMath.updateRollingAvg(averagePreCost, curCost,(j + 1));
+
 
                 // set proper values for biasNudge
                 calculateBiasNudges(biasNudge);
@@ -641,6 +665,37 @@ public class NeuralNetwork {
 
             for(int k = 0; k < numWeights; k++){
                 weights[k] = weights[k] + learningRate * avgWeightNudge[k];
+            }
+
+            // get the cost function after nudges
+            for(int k = 0; k < batchSize; k++){
+                int dataIndex = k + batchSize * i;
+                double curCost = getCost(trainingDataInput[dataIndex], trainingDataOutput[dataIndex]);
+
+                averagePostCost = NeuralMath.updateRollingAvg(averagePostCost,curCost, (k + 1));
+            }
+
+            if(averagePostCost < averagePostCost){
+                // the cost function has been lowered
+                badBatches = 0;
+            }else{
+                // the cost function has increased. We have a bad batch, and may need to decrease the learning rate
+                if(badBatches >= BAD_BATCH_TOLERANCE){
+                    // undo the nudges to the values of the weights and biases
+                    for(int k = 0; k < numBiases; k++){
+                        biases[k] = biases[k] - learningRate * avgBiasNudge[k];
+                    }
+
+                    for(int k = 0; k < numWeights; k++){
+                        weights[k] = weights[k] - learningRate * avgWeightNudge[k];
+                    }
+
+                    // reduce the learning rate
+                    learningRate /= LEARNING_REDUCTION_RATE;
+                    badBatches = 0;
+                }else{
+                    badBatches++;
+                }
             }
 
         }
