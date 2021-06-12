@@ -616,10 +616,11 @@ public class NeuralNetwork {
         // the number of bad batchs we need in a row before we reduce the learning rate
         final int BAD_BATCH_TOLERANCE = 5;
 
-        int goodBatches = 0;
+        // a batch needs an average cost less than 0.001^2 * number of neurons in the last batch to be considered good
+        double goodBatchTolerance = Math.pow(0.001,2) * numNeuronsLayer[NUM_LAYERS - 1];
 
-        // is the current batch "good"
-        boolean isGoodBatch;
+        // number of "good" batches, that meet our desired low cost
+        int numGoodBatches = 0;
 
         // how many cycles we've undergone through very batch
         int rounds = 0;
@@ -628,8 +629,11 @@ public class NeuralNetwork {
         int maxRounds = 1000000;
 
 
-        while(learningRate > FINAL_LEARNING_RATE && rounds < maxRounds) { // run the neural network until the learning rate is sufficiently low
-                                                    // then finish the current cycle
+        while(learningRate > FINAL_LEARNING_RATE && rounds < maxRounds && (numGoodBatches < numBatches)) {
+            // we will stop running the cycle after we have reached max rounds,
+            // the learning rate has reached its minimum value,
+            // or each batch is consecutively deemed "good"
+
             rounds++;
             for (int i = 0; i < numBatches; i++) {
 
@@ -694,6 +698,15 @@ public class NeuralNetwork {
                 if (averagePostCost < averagePostCost) {
                     // the cost function has been lowered
                     badBatches = 0;
+
+                    // check if the current batch is good
+                    if(averagePostCost < goodBatchTolerance){
+                        // current batch is good. increment the good batches count
+                        numGoodBatches++;
+                    }else{
+                        /// current batch is not good. restart the good batches cycle
+                        numGoodBatches = 0;
+                    }
                 } else {
                     // the cost function has increased. We have a bad batch, and may need to decrease the learning rate
                     if (badBatches >= BAD_BATCH_TOLERANCE) {
