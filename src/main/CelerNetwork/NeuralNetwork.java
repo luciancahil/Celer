@@ -616,12 +616,23 @@ public class NeuralNetwork {
         // the number of bad batchs we need in a row before we reduce the learning rate
         final int BAD_BATCH_TOLERANCE = 5;
 
+        int goodBatches = 0;
+
+        // is the current batch "good"
+        boolean isGoodBatch;
+
+        // how many cycles we've undergone through very batch
+        int rounds = 0;
+
+        //
+        int maxRounds = 1000000;
 
 
-        while(learningRate > FINAL_LEARNING_RATE) { // run the neural network until the learning rate is sufficiently low
+        while(learningRate > FINAL_LEARNING_RATE && rounds < maxRounds) { // run the neural network until the learning rate is sufficiently low
                                                     // then finish the current cycle
+            rounds++;
             for (int i = 0; i < numBatches; i++) {
-                // setting cur batch size
+
 
                 // setting all values in the Z and A nudge arrays back to the default value
                 resetNudgeArrays();
@@ -704,6 +715,7 @@ public class NeuralNetwork {
                 }
 
             }
+
         }
     }
 
