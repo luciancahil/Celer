@@ -11,35 +11,37 @@ import java.util.Random;
 public class Main {
     public static void main(String[] args) throws IOException {
 
-        //int inputSize = 784;
-        //int outputSize = 10;
-       // int numSamples = 60000;
+        int inputSize = 784;
+        int outputSize = 10;
+        int numSamples = 60000;
 
-        int inputSize = 3;
-        int outputSize = 3;
-        int numSamples = 1000;
-        Random generator = new Random(5361884675712300576L);
+       // int inputSize = 3;
+      //  int outputSize = 3;
+      //  int numSamples = 1000;
+        //Random generator = new Random(5361884675712300576L);
 
         double[][] inputArray = new double[numSamples][inputSize];
         double[][]  outputArray = new double[numSamples][outputSize];
 
 
-        //setData("data/mnist_digits.csv", inputArray, outputArray);
+        setData("data/mnist_digits.csv", inputArray, outputArray);
 
+        /*
         for(int i = 0; i < numSamples; i++){
             for(int j = 0; j < inputSize; j++){
                 inputArray[i][j] = generator.nextDouble();
                 outputArray[i][j] = generator.nextDouble();
             }
-        }
+        }*/
 
         NeuralNetwork network = new NeuralNetwork(inputSize, outputSize,5361884675712300576L);
         TestImplementation test = new TestImplementation();
 
 
         network.setData(inputArray,outputArray);
-        network.printAllValues();
-        //network.runTests(test);
+        //network.printAllValues();
+        network.train();
+        network.runTests(test);
     }
 
     /**
@@ -106,9 +108,9 @@ public class Main {
                     outputArray[i][dataPoint] = 1;
                 }else{
                     // this number represents an activation
-                    // we divide by 256 in order to get a number between 0 and 1,
+                    // we divide by 256 in order to get a number between 0 and 10,
                     // to make calibration of the neural network easier
-                    inputArray[i][j] = dataPoint/256.0;
+                    inputArray[i][j] = dataPoint/25.6;
                 }
                 oldCommaIndex = commaIndex;
             }

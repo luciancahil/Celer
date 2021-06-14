@@ -270,7 +270,7 @@ public class NeuralNetwork {
         }
 
         for(int i = 0; i < numWeights; i++){
-            weights[i] = rand.nextDouble() * 2.0/largestLayer - 1.0/largestLayer;
+            weights[i] = rand.nextDouble() * 4.0/largestLayer - 2.0/largestLayer;
         }
 
         for(int i = 0; i < numBiases; i++){
@@ -596,7 +596,7 @@ public class NeuralNetwork {
 
         // rather than running through all training data every round, run through a batch
         // this controls how many numbers are in each batch
-        final int batchSize = 100;
+        final int batchSize = 50;
 
         // the number of batches we can afford to run with the number of training examples
         final int numBatches = numTrainingExamples / batchSize;
@@ -615,8 +615,8 @@ public class NeuralNetwork {
         // the number of batches in a row that have had their costs increase due to nudges
         int badBatches = 0;
 
-        // the number of bad batchs we need in a row before we reduce the learning rate
-        final int BAD_BATCH_TOLERANCE = 5;
+        // the number of bad batches we need in a row before we reduce the learning rate
+        final int BAD_BATCH_TOLERANCE = 1;
 
         // a batch needs an average cost less than 0.001^2 * number of neurons in the last batch to be considered good
         double goodBatchTolerance = Math.pow(0.001,2) * numNeuronsLayer[LAST_LAYER];
@@ -634,7 +634,7 @@ public class NeuralNetwork {
 
         double momentum = 0;
 
-        double momentumLimit = 5;
+        double momentumLimit = 20;
 
 
         while(learningRate > FINAL_LEARNING_RATE && rounds < maxRounds && (numGoodBatches < numBatches)) {
@@ -1320,6 +1320,8 @@ public class NeuralNetwork {
 
         System.out.println("Got " + correct + " correct out of " + numTestingExamples + ", or " + 100.0 * correct/numTestingExamples + "% of the testing data");
     }
+
+    
 
 
     /**
