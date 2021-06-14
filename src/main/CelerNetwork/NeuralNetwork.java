@@ -302,8 +302,8 @@ public class NeuralNetwork {
         // initializing the arrays that will hold the data
         trainingDataInput = new double[numTrainingExamples][numNeuronsLayer[0]];
         trainingDataOutput = new double[numTrainingExamples][numNeuronsLayer[3]];
-        testingDataInput = new double[numTrainingExamples][numNeuronsLayer[0]];
-        testingDataOutput = new double[numTrainingExamples][numNeuronsLayer[3]];
+        testingDataInput = new double[numTestingExamples][numNeuronsLayer[0]];
+        testingDataOutput = new double[numTestingExamples][numNeuronsLayer[3]];
 
         // randomly assign values to the testing array
 
@@ -322,18 +322,19 @@ public class NeuralNetwork {
         // assign all values not placed into the testing array into the training array;
 
         for(int i = 0; i < numTrainingExamples; i++){
-            if(isInTesting.contains((i))){
+            while(isInTesting.contains((i + skip))){
                 // the value is in the testing array
-                i++;
-            }else{
-                // the value is not in the testing array, so we can put it in the
-                if(i == numTrainingExamples){
-                    continue;
-                }
-
-                trainingDataInput[i] = input[i];
-                trainingDataOutput[i] = output[i];
+                skip++;
             }
+
+            // the value is not in the testing array, so we can put it in the
+            if(i == numTrainingExamples){
+                continue;
+            }
+
+            trainingDataInput[i] = input[i];
+            trainingDataOutput[i] = output[i];
+
         }
     }
 
@@ -1283,7 +1284,7 @@ public class NeuralNetwork {
 
         System.out.println("Running Tests for testing data");
 
-        for(int i = 0; i < numTrainingExamples; i++){
+        for(int i = 0; i < numTestingExamples; i++){
             runExample(testingDataInput[i], testingDataOutput[i]);
             setActivationArray(finalLayerActivation);
             if(test.runTest(currentDesiredOutput, finalLayerActivation)){
@@ -1296,7 +1297,7 @@ public class NeuralNetwork {
             }
         }
 
-        System.out.println("Got " + correct + " correct out of " + numTrainingExamples + ", or " + 100.0 * correct/numTrainingExamples + "% of the testing data");
+        System.out.println("Got " + correct + " correct out of " + numTestingExamples + ", or " + 100.0 * correct/numTestingExamples + "% of the testing data");
     }
 
 
