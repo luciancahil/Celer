@@ -274,7 +274,7 @@ public class NeuralNetwork {
         }
 
         for(int i = 0; i < numBiases; i++){
-            biases[i] = rand.nextDouble() * 20 - 10;
+            biases[i] = rand.nextDouble();
         }
     }
 
@@ -1415,7 +1415,7 @@ public class NeuralNetwork {
      */
     public void printAllValues(){
         // change this to choose which data we run
-        runExample(trainingDataInput[15],trainingDataOutput[15]);
+        runExample(trainingDataInput[0],trainingDataOutput[0]);
         resetNudgeArrays();
 
         double[] weightTest = new double[numWeights];
