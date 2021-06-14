@@ -43,8 +43,9 @@ public class Main {
             testExpected[i] = 1;
             for(int j = 0; j < 4; j++){
                 testActual[j] = 1;
-                NeuralMath.printArray(testActual);
-                NeuralMath.printArray(testExpected);
+                if (!test.runTest(testExpected, testActual)){
+                    System.out.println(NeuralMath.printArray(testActual) + " does not have the same active neuron as "+ NeuralMath.printArray(testExpected));
+                }
                 testActual[j] = 0;
             }
             System.out.println();
@@ -157,7 +158,7 @@ public class Main {
 
 class TestImplementation implements Test{
     @Override
-    public boolean runTest(double[] expected, double[] actual, int startIndex) {
+    public boolean runTest(double[] expected, double[] actual) {
         return runSelectionTest(expected, actual);
     }
 

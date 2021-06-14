@@ -103,21 +103,22 @@ public class NeuralMath {
      * Prints a given array to the command line
      * @param arr the array to print
      */
-    public static void printArray(double[] arr){
+    public static String printArray(double[] arr){
         int len = arr.length;
+        StringBuilder result = new StringBuilder();
 
         if (len == 0) {
-            System.out.println("{}");
-            return;
+            return "{}";
         }
 
-        System.out.print("{" + arr[0]);
+        result.append("{" + arr[0]);
 
         for(int i = 1; i < len; i++){
-            System.out.print(", " + arr[i]);
+            result.append(", " + arr[i]);
         }
 
-        System.out.println("}");
-    }
+        result.append("}");
 
+        return result.toString();
+    }
 }
