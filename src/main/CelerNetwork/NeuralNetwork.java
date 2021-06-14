@@ -4,15 +4,15 @@ import java.util.Objects;
 import java.util.Random;
 import java.util.HashSet;
 import main.CelerNetwork.NeuralMath.NeuralMath;
+import main.CelerNetwork.NeuralMath.Test;
+import org.jetbrains.annotations.NotNull;
 
-//TODO start calculating gradient
-//TODO add learning rate calculation function
 
 //lol. I thought the above would be easy:
-//TODO test and change documentation in L3 and L2 nudge functions
-//TODO change the documentation in the nudge functions to use the proper notations
+//TODO Add an interface to store testing method
+//TODO Change how random values in the test are generated
+//TODO Maybe lower the standards for a good batch?
 //TODO change the documentation in the getIndex functions to use proper notations
-//TODO explain what the cost function is and that we want to reduce it
 
 /**
  * The Notation used in this documentation obeys the following conventions:
@@ -74,6 +74,8 @@ public class NeuralNetwork {
 
     // number of layers
     private final static int NUM_LAYERS = 4;
+
+    private final static int LAST_LAYER = NUM_LAYERS - 1;
 
     // the starting value for the activation and weighted sum nudge arrays
     private final static double DEFAULT_NUDGE = -Math.PI;
@@ -289,6 +291,7 @@ public class NeuralNetwork {
         // Random object used to select which examples are set to training.
         Random rand = new Random(seed);
         HashSet<Integer> isInTesting = new HashSet<Integer>();
+        int skip = 0;
 
         // setting the global variables
         numExamples = input.length;
@@ -299,8 +302,8 @@ public class NeuralNetwork {
         // initializing the arrays that will hold the data
         trainingDataInput = new double[numTrainingExamples][numNeuronsLayer[0]];
         trainingDataOutput = new double[numTrainingExamples][numNeuronsLayer[3]];
-        testingDataInput = new double[numTrainingExamples][numNeuronsLayer[0]];
-        testingDataOutput = new double[numTrainingExamples][numNeuronsLayer[3]];
+        testingDataInput = new double[numTestingExamples][numNeuronsLayer[0]];
+        testingDataOutput = new double[numTestingExamples][numNeuronsLayer[3]];
 
         // randomly assign values to the testing array
 
@@ -319,18 +322,19 @@ public class NeuralNetwork {
         // assign all values not placed into the testing array into the training array;
 
         for(int i = 0; i < numTrainingExamples; i++){
-            if(isInTesting.contains((i))){
+            while(isInTesting.contains((i + skip))){
                 // the value is in the testing array
-                i++;
-            }else{
-                // the value is not in the testing array, so we can put it in the
-                if(i == numTrainingExamples){
-                    continue;
-                }
-
-                trainingDataInput[i] = input[i];
-                trainingDataOutput[i] = output[i];
+                skip++;
             }
+
+            // the value is not in the testing array, so we can put it in the
+            if(i == numTrainingExamples){
+                continue;
+            }
+
+            trainingDataInput[i] = input[i];
+            trainingDataOutput[i] = output[i];
+
         }
     }
 
@@ -454,7 +458,7 @@ public class NeuralNetwork {
         runExample(input, target);
 
         // cycle through each neuron in the output layer, and check it against the target
-        for(int i = 1; i <= numNeuronsLayer[NUM_LAYERS - 1]; i++){
+        for(int i = 1; i <= numNeuronsLayer[LAST_LAYER]; i++){
             // calculate the difference between actual and desired activation.
             double diff = target[i - 1] - getActivation(NUM_LAYERS, i);
 
@@ -617,7 +621,7 @@ public class NeuralNetwork {
         final int BAD_BATCH_TOLERANCE = 5;
 
         // a batch needs an average cost less than 0.001^2 * number of neurons in the last batch to be considered good
-        double goodBatchTolerance = Math.pow(0.001,2) * numNeuronsLayer[NUM_LAYERS - 1];
+        double goodBatchTolerance = Math.pow(0.001,2) * numNeuronsLayer[LAST_LAYER];
 
         // number of "good" batches, that meet our desired low cost
         int numGoodBatches = 0;
@@ -1247,6 +1251,71 @@ public class NeuralNetwork {
         return n1Activation * n2weightedSumNudge;
     }
 
+    /**
+     * Runs the tests on both the training and testing data
+     * @param test the Test implementation that tells us to check if an example is correct
+     */
+    public void runTests(Test test){
+        // the array to store the activations of the final layer
+        double[] finalLayerActivation = new double[numNeuronsLayer[LAST_LAYER]];
+
+        // the number of correct examples
+        int correct = 0;
+
+        System.out.println("Running Tests for training data");
+
+        for(int i = 0; i < numTrainingExamples; i++){
+            runExample(trainingDataInput[i], trainingDataOutput[i]);
+            setActivationArray(finalLayerActivation);
+            System.out.println(i);
+            if(test.runTest(currentDesiredOutput, finalLayerActivation)){
+                // correct
+                correct++;
+            }else{
+                // incorrect. Print out the incorrect value
+                System.out.println(NeuralMath.printArray(finalLayerActivation) + " is incorrect");
+                System.out.println("Expected " + NeuralMath.printArray(currentDesiredOutput));
+            }
+        }
+
+        System.out.println("Got " + correct + " correct out of " + numTrainingExamples + ", or " + 100.0 * correct/numTrainingExamples + "% of the training data");
+
+        correct = 0;
+
+        System.out.println("Running Tests for testing data");
+
+        for(int i = 0; i < numTestingExamples; i++){
+            runExample(testingDataInput[i], testingDataOutput[i]);
+            setActivationArray(finalLayerActivation);
+            if(test.runTest(currentDesiredOutput, finalLayerActivation)){
+                // correct
+                correct++;
+            }else{
+                // incorrect. Print out the incorrect value
+                System.out.println(NeuralMath.printArray(finalLayerActivation) + " is incorrect");
+                System.out.println("Expected " + NeuralMath.printArray(currentDesiredOutput));
+            }
+        }
+
+        System.out.println("Got " + correct + " correct out of " + numTestingExamples + ", or " + 100.0 * correct/numTestingExamples + "% of the testing data");
+    }
+
+
+    /**
+     * puts the activation of the final layer into an array
+     * @param arr the array the activation will be put into
+     */
+    private void setActivationArray(double @NotNull [] arr)throws IllegalArgumentException{
+        int len = arr.length;
+
+        if(len != numNeuronsLayer[LAST_LAYER]){
+            throw new IllegalArgumentException("The provided array has " + len +  " spots, while it needs " + numNeuronsLayer[LAST_LAYER]);
+        }
+
+        for(int i = 0; i < len; i++){
+            arr[i] = getActivation(NUM_LAYERS, i + 1);
+        }
+    }
 
     /*
      * Print functions meant to aid in debugging
@@ -1325,7 +1394,7 @@ public class NeuralNetwork {
      */
     public void printAllValues(){
         // change this to choose which data we run
-        runExample(trainingDataInput[4],trainingDataOutput[4]);
+        runExample(trainingDataInput[15],trainingDataOutput[15]);
         resetNudgeArrays();
 
         double[] weightTest = new double[numWeights];
@@ -1352,9 +1421,14 @@ public class NeuralNetwork {
         //printing activations:
         printAllActivation();
 
+        double[] testArr = new double[numNeuronsLayer[LAST_LAYER]];
+        setActivationArray( testArr);
+
+        System.out.println(NeuralMath.printArray(testArr));
+
         //printing desired:
         System.out.println("Desired:");
-        for(int i = 0; i <  numNeuronsLayer[NUM_LAYERS - 1]; i++){
+        for(int i = 0; i <  numNeuronsLayer[LAST_LAYER]; i++){
             System.out.print(currentDesiredOutput[i] + " ");
         }
 
@@ -1485,8 +1559,10 @@ public class NeuralNetwork {
         double activation;
 
         if(layer < NUM_LAYERS){
+            // we are not on last layer
             activation = NeuralMath.leakyRELU(weightedSum);
         }else{
+            // we are on last layer
             activation = NeuralMath.sigmoid(weightedSum);
         }
 

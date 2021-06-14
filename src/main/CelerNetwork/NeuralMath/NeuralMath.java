@@ -99,4 +99,26 @@ public class NeuralMath {
         return avg - avg/count + newVal/count;
     }
 
+    /**
+     * Prints a given array to the command line
+     * @param arr the array to print
+     */
+    public static String printArray(double[] arr){
+        int len = arr.length;
+        StringBuilder result = new StringBuilder();
+
+        if (len == 0) {
+            return "{}";
+        }
+
+        result.append("{" + arr[0]);
+
+        for(int i = 1; i < len; i++){
+            result.append(", " + arr[i]);
+        }
+
+        result.append("}");
+
+        return result.toString();
+    }
 }
