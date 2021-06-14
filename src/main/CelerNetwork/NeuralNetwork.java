@@ -5,14 +5,13 @@ import java.util.Random;
 import java.util.HashSet;
 import main.CelerNetwork.NeuralMath.NeuralMath;
 
-//TODO start calculating gradient
-//TODO add learning rate calculation function
+
 
 //lol. I thought the above would be easy:
-//TODO test and change documentation in L3 and L2 nudge functions
-//TODO change the documentation in the nudge functions to use the proper notations
+//TODO Add an interface to store testing method
+//TODO Change how random values in the test are generated
+//TODO Maybe lower the standards for a good batch?
 //TODO change the documentation in the getIndex functions to use proper notations
-//TODO explain what the cost function is and that we want to reduce it
 
 /**
  * The Notation used in this documentation obeys the following conventions:

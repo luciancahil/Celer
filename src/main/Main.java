@@ -1,4 +1,5 @@
 package main;
+import main.CelerNetwork.NeuralMath.Test;
 import main.CelerNetwork.NeuralNetwork;
 import main.CelerNetwork.NeuralMath.NeuralMath;
 
@@ -132,5 +133,53 @@ public class Main {
             }
             System.out.println();
         }
+    }
+}
+
+
+class TestImplementation implements Test{
+    @Override
+    public boolean runTest(double[] expected, double[] actual, int startIndex) {
+        return runSelectionTest(expected, actual);
+    }
+
+    /**
+     * A test to run if only one neuron is "active"
+     * @param expected the array that contains the expected actiavtion of the final layer
+     * @param actual the actual final layer of a neurla netwrok
+     * @return true if the most active neuron is as expected, false otherwise
+     */
+    private boolean runSelectionTest(double[] expected, double[] actual) throws IllegalArgumentException{
+        // the index of the neuron that is "active".
+        int activatedIndex = -1;
+        int len = expected.length;
+        // the largest neuron in the actual array
+        int mostActiveIndex = 0;
+
+        for(int i = 0; i < len; i++){
+
+            if(expected[i] == 1){
+                // we have found the correct index of the neuron to turn on
+                activatedIndex = i;
+                break;
+            }
+        }
+
+        if(activatedIndex == -1){
+            // no active neuron was found
+
+            throw new IllegalArgumentException("There was no avtive neuron.");
+        }
+
+        // find the most active index in the actual array
+        for(int i = 1; i < len; i++){
+            if(actual[i] > actual[mostActiveIndex]){
+                // we have found a more active neuron
+                mostActiveIndex = i;
+            }
+        }
+
+        // is the most activated index the one we wanted?
+        return (mostActiveIndex == activatedIndex);
     }
 }
