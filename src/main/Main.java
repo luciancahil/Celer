@@ -39,23 +39,12 @@ public class Main {
         double[] testActual = new double[4];
         double[] testExpected = new double[4];
 
-        for(int i = 0; i < 4; i++){
-            testExpected[i] = 1;
-            for(int j = 0; j < 4; j++){
-                testActual[j] = 1;
-                if (!test.runTest(testExpected, testActual)){
-                    System.out.println(NeuralMath.printArray(testActual) + " does not have the same active neuron as "+ NeuralMath.printArray(testExpected));
-                }
-                testActual[j] = 0;
-            }
-            System.out.println();
-            testExpected[i] = 0;
-        }
 
         NeuralMath.printArray(new double[0]);
 
-       // network.setData(inputArray,outputArray);
+        network.setData(inputArray,outputArray);
        // network.train();
+        network.runTests(test);
     }
 
     /**
