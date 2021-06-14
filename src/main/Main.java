@@ -44,7 +44,8 @@ public class Main {
 
         network.setData(inputArray,outputArray);
        // network.train();
-        network.runTests(test);
+        network.printAllValues();
+        //network.runTests(test);
     }
 
     /**

@@ -1260,8 +1260,9 @@ public class NeuralNetwork {
        // System.out.println("Running Tests for training data :");
 
         for(int i = 0; i < numTrainingExamples; i++){
-            runExample(trainingDataInput[i], trainingDataOutput[i]);
+            runExample(trainingDataInput[4], trainingDataOutput[4]);
             setActivationArray(finalLayerActivation);
+            System.out.println(NeuralMath.printArray(finalLayerActivation));
         }
     }
 
@@ -1278,7 +1279,7 @@ public class NeuralNetwork {
         }
 
         for(int i = 0; i < len; i++){
-            arr[i] = getActivation(LAST_LAYER, i + 1);
+            arr[i] = getActivation(NUM_LAYERS, i + 1);
         }
     }
 
@@ -1359,7 +1360,7 @@ public class NeuralNetwork {
      */
     public void printAllValues(){
         // change this to choose which data we run
-        runExample(trainingDataInput[4],trainingDataOutput[4]);
+        runExample(trainingDataInput[15],trainingDataOutput[15]);
         resetNudgeArrays();
 
         double[] weightTest = new double[numWeights];
@@ -1385,6 +1386,11 @@ public class NeuralNetwork {
 
         //printing activations:
         printAllActivation();
+
+        double[] testArr = new double[numNeuronsLayer[LAST_LAYER]];
+        setActivationArray( testArr);
+
+        System.out.println(NeuralMath.printArray(testArr));
 
         //printing desired:
         System.out.println("Desired:");
@@ -1518,7 +1524,7 @@ public class NeuralNetwork {
         double weightedSum = neuronWeightedSums[getNeuronIndex(layer, number)];
         double activation;
 
-        if(layer < LAST_LAYER){
+        if(layer < NUM_LAYERS){
             // we are not on last layer
             activation = NeuralMath.leakyRELU(weightedSum);
         }else{
