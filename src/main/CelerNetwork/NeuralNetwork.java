@@ -542,7 +542,7 @@ public class NeuralNetwork {
      * @param array: the array we are checking
      */
     private void validateOutput(double[] array){
-        if(array.length != numNeuronsLayer[0]){
+        if(array.length != numNeuronsLayer[LAST_LAYER]){
             throw new IllegalArgumentException("The output array should have " + numNeuronsLayer[0] + " entries instead of " + array.length + ".");
         }
     }
@@ -1138,8 +1138,8 @@ public class NeuralNetwork {
          * dC/dA(2,b) = Σ(W(b,3,c) * dC/dZ(3,c))
          */
 
-        for(int i = 1; i <= numNeuronsLayer[1]; i++){
-            double curChange = weights[getWeightIndex(place, 3, i)] * getWeightedSumNudgeL3(i);
+        for(int i = 1; i <= numNeuronsLayer[2]; i++){
+            double curChange = weights[getWeightIndex(place, 2, i)] * getWeightedSumNudgeL3(i);
 
             totalNudges += curChange;
         }

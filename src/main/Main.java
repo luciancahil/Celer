@@ -14,9 +14,9 @@ public class Main {
         int inputSize = 784;
         int outputSize = 10;*/
 
-        int inputSize = 3;
+        int inputSize = 100;
         int outputSize = 3;
-        int numSamples = 1000;
+        int numSamples = 60000;
 
         double[][] inputArray = new double[numSamples][inputSize];
         double[][]  outputArray = new double[numSamples][outputSize];
