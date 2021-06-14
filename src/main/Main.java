@@ -10,45 +10,22 @@ import java.util.Random;
 
 public class Main {
     public static void main(String[] args) throws IOException {
-        /*
-        int inputSize = 784;
-        int outputSize = 10;*/
 
-        int inputSize = 100;
-        int outputSize = 3;
+        int inputSize = 784;
+        int outputSize = 10;
         int numSamples = 60000;
 
         double[][] inputArray = new double[numSamples][inputSize];
         double[][]  outputArray = new double[numSamples][outputSize];
-        Random valuesGen = new Random(5361463215537840273l);
-
-        for(int i = 0; i <numSamples; i ++){
-            for(int j = 0; j < inputSize; j++){
-                inputArray[i][j] = (valuesGen.nextDouble() * 10) % 10;
-                //outputArray[i][j] = NeuralMath.sigmoid(valuesGen.nextDouble() * 10) ;
-            }
-        }
-
-        for(int i = 0; i < numSamples; i++){
-            outputArray[i][Math.abs(valuesGen.nextInt()) % outputSize] = 1;
-        }
 
 
-        //setData("data/mnist_digits.csv", inputArray, outputArray);
-
-        //NeuralNetwork network = new NeuralNetwork(inputSize, outputSize,5361463625739800576l);
-        NeuralNetwork network = new NeuralNetwork(inputSize, outputSize,5361512225739800576l);
+        setData("data/mnist_digits.csv", inputArray, outputArray);
+        NeuralNetwork network = new NeuralNetwork(inputSize, outputSize,5361888225712300576l);
         TestImplementation test = new TestImplementation();
 
-        double[] testActual = new double[4];
-        double[] testExpected = new double[4];
-
-
-        NeuralMath.printArray(new double[0]);
 
         network.setData(inputArray,outputArray);
         network.train();
-        //network.printAllValues();
         network.runTests(test);
     }
 

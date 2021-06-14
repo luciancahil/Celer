@@ -9,9 +9,7 @@ import org.jetbrains.annotations.NotNull;
 
 
 //lol. I thought the above would be easy:
-//TODO Add an interface to store testing method
-//TODO Change how random values in the test are generated
-//TODO Maybe lower the standards for a good batch?
+//TODO for some reason, the network is outputting everything as a 5. Let's look into why a bit later
 //TODO change the documentation in the getIndex functions to use proper notations
 
 /**
@@ -618,7 +616,7 @@ public class NeuralNetwork {
         int badBatches = 0;
 
         // the number of bad batchs we need in a row before we reduce the learning rate
-        final int BAD_BATCH_TOLERANCE = 5;
+        final int BAD_BATCH_TOLERANCE = 10;
 
         // a batch needs an average cost less than 0.001^2 * number of neurons in the last batch to be considered good
         double goodBatchTolerance = Math.pow(0.001,2) * numNeuronsLayer[LAST_LAYER];
@@ -637,14 +635,12 @@ public class NeuralNetwork {
             // we will stop running the cycle after we have reached max rounds,
             // the learning rate has reached its minimum value,
             // or each batch is consecutively deemed "good"
-
+            System.out.println(rounds);
             rounds++;
             for (int i = 0; i < numBatches; i++) {
+                //System.out.println(i + "vs." + numBatches);
                 averagePreCost = 0;
 
-
-                // setting all values in the Z and A nudge arrays back to the default value
-                resetNudgeArrays();
 
                 if (i < numBatches - 1) {
                     // not the final batch
@@ -674,6 +670,9 @@ public class NeuralNetwork {
 
                     averagePreCost = NeuralMath.updateRollingAvg(averagePreCost, curCost, (j + 1));
 
+
+                    // setting all values in the Z and A nudge arrays back to the default value
+                    resetNudgeArrays();
 
                     // set proper values for biasNudge
                     calculateBiasNudges(biasNudge);
@@ -706,6 +705,12 @@ public class NeuralNetwork {
                     averagePostCost = NeuralMath.updateRollingAvg(averagePostCost, curCost, (k + 1));
                 }
 
+                if(i % 10 == 0) {
+                    System.out.println(i + "-pre:  " + averagePreCost);
+                    System.out.println(i + "-post: " + averagePostCost);
+                    System.out.println("LR:" + learningRate);
+                }
+
                 // check if the cost function has been lowered
                 if (averagePostCost < averagePreCost) {
                     // the cost function has been lowered
@@ -736,6 +741,9 @@ public class NeuralNetwork {
 
                         // reduce the learning rate
                         learningRate /= LEARNING_REDUCTION_RATE;
+                        if(learningRate < FINAL_LEARNING_RATE){
+                            return;
+                        }
                         badBatches = 0;
                     } else {
                         badBatches++;
@@ -766,6 +774,7 @@ public class NeuralNetwork {
             activationNudges[i] = DEFAULT_NUDGE;
             weightedSumNudges[i] = DEFAULT_NUDGE;
         }
+        System.out.print("");
     }
 
     /**
@@ -1267,7 +1276,7 @@ public class NeuralNetwork {
         for(int i = 0; i < numTrainingExamples; i++){
             runExample(trainingDataInput[i], trainingDataOutput[i]);
             setActivationArray(finalLayerActivation);
-            System.out.println(i);
+            //System.out.println(i);
             if(test.runTest(currentDesiredOutput, finalLayerActivation)){
                 // correct
                 correct++;
