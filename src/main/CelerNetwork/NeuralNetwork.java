@@ -616,7 +616,7 @@ public class NeuralNetwork {
         int badBatches = 0;
 
         // the number of bad batchs we need in a row before we reduce the learning rate
-        final int BAD_BATCH_TOLERANCE = 10;
+        final int BAD_BATCH_TOLERANCE = 5;
 
         // a batch needs an average cost less than 0.001^2 * number of neurons in the last batch to be considered good
         double goodBatchTolerance = Math.pow(0.001,2) * numNeuronsLayer[LAST_LAYER];
@@ -629,6 +629,12 @@ public class NeuralNetwork {
 
         //
         int maxRounds = 1000000;
+
+        // when the cost is lowered many times in a row,  it could be a sign to raise the learning rate
+
+        double momentum = 0;
+
+        double momentumLimit = 5;
 
 
         while(learningRate > FINAL_LEARNING_RATE && rounds < maxRounds && (numGoodBatches < numBatches)) {
@@ -715,6 +721,12 @@ public class NeuralNetwork {
                 if (averagePostCost < averagePreCost) {
                     // the cost function has been lowered
                     badBatches = 0;
+                    momentum++;
+
+                    if(momentum >= momentumLimit){
+                        learningRate *= LEARNING_REDUCTION_RATE;
+                        momentum = 0;
+                    }
 
                     // check if the current batch is good
                     if(averagePostCost < goodBatchTolerance){
