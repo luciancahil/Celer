@@ -1160,7 +1160,7 @@ public class NeuralNetwork {
          */
 
         for(int i = 1; i <= numNeuronsLayer[2]; i++){
-            double curChange = weights[getWeightIndex(place, 2, i)] * getWeightedSumNudgeL3(i);
+            double curChange = weights[getWeightIndex(place, 3, i)] * getWeightedSumNudgeL3(i);
 
             totalNudges += curChange;
         }
