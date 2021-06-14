@@ -25,8 +25,12 @@ public class Main {
         for(int i = 0; i <numSamples; i ++){
             for(int j = 0; j < inputSize; j++){
                 inputArray[i][j] = (valuesGen.nextDouble() * 10) % 10;
-                outputArray[i][j] = NeuralMath.sigmoid(valuesGen.nextDouble() * 10) ;
+                //outputArray[i][j] = NeuralMath.sigmoid(valuesGen.nextDouble() * 10) ;
             }
+        }
+
+        for(int i = 0; i < numSamples; i++){
+            outputArray[i][Math.abs(valuesGen.nextInt()) % outputSize] = 1;
         }
 
 
@@ -43,9 +47,9 @@ public class Main {
         NeuralMath.printArray(new double[0]);
 
         network.setData(inputArray,outputArray);
-       // network.train();
-        network.printAllValues();
-        //network.runTests(test);
+        network.train();
+        //network.printAllValues();
+        network.runTests(test);
     }
 
     /**

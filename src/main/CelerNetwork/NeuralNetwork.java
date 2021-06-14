@@ -291,6 +291,7 @@ public class NeuralNetwork {
         // Random object used to select which examples are set to training.
         Random rand = new Random(seed);
         HashSet<Integer> isInTesting = new HashSet<Integer>();
+        int skip = 0;
 
         // setting the global variables
         numExamples = input.length;
@@ -1257,13 +1258,45 @@ public class NeuralNetwork {
         // the array to store the activations of the final layer
         double[] finalLayerActivation = new double[numNeuronsLayer[LAST_LAYER]];
 
-       // System.out.println("Running Tests for training data :");
+        // the number of correct examples
+        int correct = 0;
+
+        System.out.println("Running Tests for training data");
 
         for(int i = 0; i < numTrainingExamples; i++){
-            runExample(trainingDataInput[4], trainingDataOutput[4]);
+            runExample(trainingDataInput[i], trainingDataOutput[i]);
             setActivationArray(finalLayerActivation);
-            System.out.println(NeuralMath.printArray(finalLayerActivation));
+            System.out.println(i);
+            if(test.runTest(currentDesiredOutput, finalLayerActivation)){
+                // correct
+                correct++;
+            }else{
+                // incorrect. Print out the incorrect value
+                System.out.println(NeuralMath.printArray(finalLayerActivation) + " is incorrect");
+                System.out.println("Expected " + NeuralMath.printArray(currentDesiredOutput));
+            }
         }
+
+        System.out.println("Got " + correct + " correct out of " + numTrainingExamples + ", or " + 100.0 * correct/numTrainingExamples + "% of the training data");
+
+        correct = 0;
+
+        System.out.println("Running Tests for testing data");
+
+        for(int i = 0; i < numTrainingExamples; i++){
+            runExample(testingDataInput[i], testingDataOutput[i]);
+            setActivationArray(finalLayerActivation);
+            if(test.runTest(currentDesiredOutput, finalLayerActivation)){
+                // correct
+                correct++;
+            }else{
+                // incorrect. Print out the incorrect value
+                System.out.println(NeuralMath.printArray(finalLayerActivation) + " is incorrect");
+                System.out.println("Expected " + NeuralMath.printArray(currentDesiredOutput));
+            }
+        }
+
+        System.out.println("Got " + correct + " correct out of " + numTrainingExamples + ", or " + 100.0 * correct/numTrainingExamples + "% of the testing data");
     }
 
 
