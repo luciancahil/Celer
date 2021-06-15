@@ -1,5 +1,7 @@
 package main.CelerNetwork.NeuralMath;
 
+import java.text.DecimalFormat;
+
 public class NeuralMath {
     /* Coefficient that will be used to calculate the output of the relu function when a number is less than 0 */
     public static final double LEAKY_COEFFICIENT = 0.01;
@@ -78,7 +80,7 @@ public class NeuralMath {
      * @param avg the rolling average without newVal
      * @param newVal the value we wish to add
      * @param count the number of values the rolling average contains, including newVal
-     * @return
+     * @return the average with the new value included
      */
     public static double updateRollingAvg(double avg, double newVal, int count) {
         if(count == 1 && avg != 0){
@@ -102,6 +104,7 @@ public class NeuralMath {
     /**
      * Prints a given array to the command line
      * @param arr the array to print
+     * @return the string representation of the given array
      */
     public static String printArray(double[] arr){
         int len = arr.length;
@@ -111,10 +114,10 @@ public class NeuralMath {
             return "{}";
         }
 
-        result.append("{" + arr[0]);
+        result.append("{" + new DecimalFormat("#.00000").format(arr[0]));
 
         for(int i = 1; i < len; i++){
-            result.append(", " + arr[i]);
+            result.append(", " + new DecimalFormat("#.00000").format(arr[i]));
         }
 
         result.append("}");

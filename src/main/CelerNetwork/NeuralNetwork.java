@@ -1334,7 +1334,13 @@ public class NeuralNetwork {
 
 
         try {
-            String myContent = "Hello!";
+            String Layers = "Neurons: " + numNeuronsLayer[0] + ", " + numNeuronsLayer[1] + ", " +  numNeuronsLayer[2] + ", " +  numNeuronsLayer[3];
+            StringBuilder weightString = new StringBuilder("Weights: ");
+            StringBuilder biasString = new StringBuilder("Biases: ");
+
+            // adding all the biases
+            weightString.append(NeuralMath.printArray((weights)));
+            biasString.append(NeuralMath.printArray(biases));
 
 
             file = new File(pathName);
@@ -1345,8 +1351,10 @@ public class NeuralNetwork {
             }
 
             FileWriter fw = new FileWriter(file);
-            fw.write(myContent);
-            fw.write("more!");
+            //fw.write(myContent);
+            fw.write(Layers + "\n");
+            fw.write(weightString + "\n");
+            fw.write(biasString + "\n");
             System.out.println("File written Successfully");
 
             fw.flush();
