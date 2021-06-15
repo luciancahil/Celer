@@ -621,7 +621,7 @@ public class NeuralNetwork {
         final int BAD_BATCH_TOLERANCE = 1;
 
         // a batch needs an average cost less than 0.001^2 * number of neurons in the last batch to be considered good
-        double goodBatchTolerance = Math.pow(0.001,2) * numNeuronsLayer[LAST_LAYER];
+        double goodBatchTolerance = Math.pow(0.05,2) * numNeuronsLayer[LAST_LAYER];
 
         // number of "good" batches, that meet our desired low cost
         int numGoodBatches = 0;
