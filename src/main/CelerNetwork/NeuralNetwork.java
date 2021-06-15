@@ -1327,9 +1327,9 @@ public class NeuralNetwork {
     public void printNetwork()throws IOException{
         BufferedWriter bw = null;
         LocalDateTime dateTime = LocalDateTime.now();
-        String fileName = "Network at " + dateTime.toString();
-        fileName = fileName.replace(':','/');
-        System.out.println(fileName);
+        String pathName = "Networks\\Network at " + dateTime.toString() + ".txt";
+        pathName = pathName.replace(':','-');
+        System.out.println(pathName);
         File file;
 
 
@@ -1337,7 +1337,7 @@ public class NeuralNetwork {
             String myContent = "Hello!";
 
 
-            file = new File("Networks\\filename.txt");
+            file = new File(pathName);
             if (file.createNewFile()) {
                 System.out.println("File created: " + file.getName());
             } else {
