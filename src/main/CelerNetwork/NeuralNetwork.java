@@ -6,6 +6,8 @@ import java.util.HashSet;
 import main.CelerNetwork.NeuralMath.NeuralMath;
 import main.CelerNetwork.NeuralMath.Test;
 import org.jetbrains.annotations.NotNull;
+import java.io.*;
+import java.time.*;
 
 
 //lol. I thought the above would be easy:
@@ -1321,8 +1323,39 @@ public class NeuralNetwork {
         System.out.println("Got " + correct + " correct out of " + numTestingExamples + ", or " + 100.0 * correct/numTestingExamples + "% of the testing data");
     }
 
-    
 
+    public void printNetwork()throws IOException{
+        BufferedWriter bw = null;
+        LocalDateTime dateTime = LocalDateTime.now();
+        String fileName = "Network at " + dateTime.toString();
+        fileName = fileName.replace(':','/');
+        System.out.println(fileName);
+        File file;
+
+
+        try {
+            String myContent = "Hello!";
+
+
+            file = new File("Networks\\filename.txt");
+            if (file.createNewFile()) {
+                System.out.println("File created: " + file.getName());
+            } else {
+                System.out.println("File already exists.");
+            }
+
+            FileWriter fw = new FileWriter(file);
+            fw.write(myContent);
+            fw.write("more!");
+            System.out.println("File written Successfully");
+
+            fw.flush();
+            fw.close();
+
+        }catch (IOException ioe) {
+            ioe.printStackTrace();
+        }
+    }
 
     /**
      * puts the activation of the final layer into an array

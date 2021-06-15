@@ -24,7 +24,7 @@ public class Main {
         double[][]  outputArray = new double[numSamples][outputSize];
 
 
-        setData("data/mnist_digits.csv", inputArray, outputArray);
+        //setData("data/mnist_digits.csv", inputArray, outputArray);
 
         /*
         for(int i = 0; i < numSamples; i++){
@@ -40,8 +40,9 @@ public class Main {
 
         network.setData(inputArray,outputArray);
         //network.printAllValues();
-        network.train();
-        network.runTests(test);
+        //network.train();
+        //network.runTests(test);
+        network.printNetwork();
     }
 
     /**
