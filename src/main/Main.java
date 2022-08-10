@@ -188,4 +188,29 @@ class TestImplementation implements Test{
         // is the most activated index the one we wanted?
         return (mostActiveIndex == activatedIndex);
     }
+    
+    /**
+     * A test to run if only many neurons are active, and we need to check the correct ones are
+     * @param expected the array that contains the expected actiavtion of the final layer
+     * @param actual the actual final layer of a neurla netwrok
+     * @return true if the correct neurons are on.
+     */
+    private boolean runTrueFalseTest(double[] expected, double[] actual) throws IllegalArgumentException{
+        // the index of the neuron that is "active".
+        int len = expected.length;
+
+
+        for(int i = 0; i < len; i++){
+            if(expected[i] == 1 && actual[i] <= 0.5){
+                // the neuron is supposed to be on, but isn't
+                return false;
+            } else if (expected[i] == 0 && actual[i] > 0.5) {
+                // the neuron is supposed to be off, but is on.
+                return false;
+            }
+        }
+
+        // if we get here, we haven't found a mistake. Thus, our neurons are Correct
+        return true;
+    }
 }
