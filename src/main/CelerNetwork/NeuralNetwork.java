@@ -549,8 +549,9 @@ public class NeuralNetwork {
 
     /**
      * The function that runs to do the training and learning of the network
+     * @param batchSize: The number of trials in each batch
      */
-    public void train(){
+    public void train(int batchSize, int epochs){
         /*
          * We are trying to calculate the desired "nudges" for weights and biases of a given
          * batch in the following loop.
@@ -596,10 +597,6 @@ public class NeuralNetwork {
         // the weigh nudges desired by a single set of data
         final double[] weightNudge = new double[numWeights];
 
-        // rather than running through all training data every round, run through a batch
-        // this controls how many numbers are in each batch
-        final int batchSize = 50;
-
         // the number of batches we can afford to run with the number of training examples
         final int numBatches = numTrainingExamples / batchSize;
 
@@ -629,9 +626,6 @@ public class NeuralNetwork {
         // how many cycles we've undergone through very batch
         int rounds = 0;
 
-        //
-        int maxRounds = 1000000;
-
         // when the cost is lowered many times in a row,  it could be a sign to raise the learning rate
 
         double momentum = 0;
@@ -639,7 +633,7 @@ public class NeuralNetwork {
         double momentumLimit = 20;
 
 
-        while(learningRate > FINAL_LEARNING_RATE && rounds < maxRounds && (numGoodBatches < numBatches)) {
+        while(learningRate > FINAL_LEARNING_RATE && rounds < numTrainingExamples * epochs && (numGoodBatches < numBatches)) {
             // we will stop running the cycle after we have reached max rounds,
             // the learning rate has reached its minimum value,
             // or each batch is consecutively deemed "good"
