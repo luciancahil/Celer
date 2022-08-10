@@ -5,7 +5,6 @@ import java.util.Random;
 import java.util.HashSet;
 import main.CelerNetwork.NeuralMath.NeuralMath;
 import main.CelerNetwork.NeuralMath.Test;
-import org.jetbrains.annotations.NotNull;
 import java.io.*;
 import java.time.*;
 
@@ -633,7 +632,7 @@ public class NeuralNetwork {
         double momentumLimit = 20;
 
 
-        while(learningRate > FINAL_LEARNING_RATE && rounds < numTrainingExamples * epochs && (numGoodBatches < numBatches)) {
+        while(learningRate > FINAL_LEARNING_RATE && rounds < epochs && (numGoodBatches < numBatches)) {
             // we will stop running the cycle after we have reached max rounds,
             // the learning rate has reached its minimum value,
             // or each batch is consecutively deemed "good"
@@ -1363,7 +1362,7 @@ public class NeuralNetwork {
      * puts the activation of the final layer into an array
      * @param arr the array the activation will be put into
      */
-    private void setActivationArray(double @NotNull [] arr)throws IllegalArgumentException{
+    private void setActivationArray(double[] arr)throws IllegalArgumentException{
         int len = arr.length;
 
         if(len != numNeuronsLayer[LAST_LAYER]){

@@ -35,12 +35,12 @@ public class Main {
         }*/
 
         NeuralNetwork network = new NeuralNetwork(inputSize, outputSize,5361884675712300576L);
-        TestImplementation test = new TestImplementation();
+        TestImplementation test = new TestImplementation("SELECTION");
 
 
         network.setData(inputArray,outputArray);
         //network.printAllValues();
-        network.train();
+        network.train(50, 1);
         network.runTests(test);
         network.printNetwork();
     }
@@ -146,7 +146,7 @@ public class Main {
 class TestImplementation implements Test{
     private final String type;
     
-    public TestImplmentation(String type) {
+    public TestImplementation(String type) {
         if(!type.equals("SELECTION") && !type.equals("TRUEFALSE")) {
             throw new IllegalArgumentException("No valid type provided");
         }
@@ -158,7 +158,7 @@ class TestImplementation implements Test{
     public boolean runTest(double[] expected, double[] actual) {
         if(type.equals("SELECTION")) {
             return runSelectionTest(expected, actual);
-        } else if(type.equals("TRUEFALSE"){
+        } else if(type.equals("TRUEFALSE")) {
             return runTrueFalseTest(expected, actual);
         }
                   
