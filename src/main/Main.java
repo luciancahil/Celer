@@ -144,9 +144,25 @@ public class Main {
 
 
 class TestImplementation implements Test{
+    private final String type;
+    
+    public TestImplmentation(String type) {
+        if(!type.equals("SELECTION") && !type.equals("TRUEFALSE")) {
+            throw new IllegalArgumentException("No valid type provided");
+        }
+        
+        this.type = type;
+    }
+    
     @Override
     public boolean runTest(double[] expected, double[] actual) {
-        return runSelectionTest(expected, actual);
+        if(type.equals("SELECTION")) {
+            return runSelectionTest(expected, actual);
+        } else if(type.equals("TRUEFALSE"){
+            return runTrueFalseTest(expected, actual);
+        }
+                  
+        return false;
     }
 
     /**
@@ -190,9 +206,9 @@ class TestImplementation implements Test{
     }
     
     /**
-     * A test to run if only many neurons are active, and we need to check the correct ones are
+     * A test to run if many neurons are active, and we need to check the correct ones are
      * @param expected the array that contains the expected actiavtion of the final layer
-     * @param actual the actual final layer of a neurla netwrok
+     * @param actual the actual final layer of a neural netwrok
      * @return true if the correct neurons are on.
      */
     private boolean runTrueFalseTest(double[] expected, double[] actual) throws IllegalArgumentException{
