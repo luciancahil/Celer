@@ -49,7 +49,7 @@ Selection means only one neuron should be on in the final output layer, and we w
 
 TrueFalse means multiple neurons are on in the output layer, and we want to check if the network lit up the correct ones.
 
-then, pass the declared test class into:
+Then, pass the declared test class into:
 <pre>
       network.runTests(test);
 </pre>
