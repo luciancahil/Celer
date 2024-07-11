@@ -29,7 +29,7 @@ Where inputArray and outputArrays are both arrays of arrays of doubles. A given 
 ### Training
 To train the network, use the method 
 <pre>
-                network.setData(batchSize, epochs);
+                network.train(batchSize, epochs);
 </pre>
 
 Where batchSize represents the number of data sets we want to run through in each batch before adjusting the parameters, and epochs represents how many times we should go through the entire data set.
